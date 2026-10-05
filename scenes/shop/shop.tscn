@@ -3,16 +3,15 @@
 [ext_resource type="Script" uid="uid://dli3ban7y2dnw" path="res://scenes/shop/Shop.cs" id="1_100s2"]
 [ext_resource type="PackedScene" uid="uid://tvjodhiqwomq" path="res://scenes/customer/customer.tscn" id="2_qaxay"]
 [ext_resource type="Script" uid="uid://dld8qwimxwovx" path="res://game/orders/DrinkRecipe.cs" id="3_ptf86"]
-[ext_resource type="Resource" uid="uid://ctagyr1dx73qo" path="res://resources/drinks/cappuccino.tres" id="4_ge4d2"]
-[ext_resource type="Resource" uid="uid://2dwj8bn6ncko" path="res://resources/drinks/espresso.tres" id="5_xcdpw"]
-[ext_resource type="Resource" uid="uid://culsaao3corts" path="res://resources/drinks/latte.tres" id="6_tp26b"]
+[ext_resource type="Resource" uid="uid://dt7t8eyqsgieb" path="res://resources/drinks/instant_coffee.tres" id="4_dww4p"]
 [ext_resource type="Texture2D" uid="uid://ck47ys1lqrf05" path="res://assets/art/shop/floor_tile.svg" id="7_vk20h"]
-[ext_resource type="Texture2D" uid="uid://byc7s3fpxir3g" path="res://assets/art/shop/counter.svg" id="8_8qn5i"]
 [ext_resource type="PackedScene" uid="uid://klsq871q5lpe" path="res://scenes/barista/barista.tscn" id="8_dww4p"]
-[ext_resource type="Texture2D" uid="uid://cy3mr5j0xqhpp" path="res://assets/art/shop/coffee_machine.svg" id="9_dww4p"]
+[ext_resource type="Texture2D" uid="uid://wm4rdm4m1afk" path="res://assets/art/shop/small_counter.svg" id="9_131kw"]
 [ext_resource type="Shader" uid="uid://b8m1171aqstb" path="res://scenes/common/outline.gdshader" id="10_131kw"]
 [ext_resource type="Texture2D" uid="uid://c8caa41qua05f" path="res://assets/art/shop/door.svg" id="10_g6lcs"]
+[ext_resource type="Texture2D" uid="uid://c6v5km103h2ns" path="res://assets/art/shop/kettle.svg" id="11_xoc10"]
 [ext_resource type="Script" uid="uid://b37paq3exwaeg" path="res://scenes/common/Clickable.cs" id="12_xoc10"]
+[ext_resource type="Texture2D" uid="uid://c7c2r6wbfvrjn" path="res://assets/art/shop/takeaway_cups.svg" id="13_k5co3"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_lu5oa"]
 shader = ExtResource("10_131kw")
@@ -21,69 +20,89 @@ shader_parameter/outline_color = Color(1, 0.92, 0.55, 1)
 shader_parameter/width = 2.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wvx66"]
-size = Vector2(64, 60)
+size = Vector2(40, 40)
 
-[node name="Shop" type="Node2D" unique_id=1744938923 node_paths=PackedStringArray("Door", "Counter", "SpawnTimer", "Barista", "CoffeeMachineArea", "MachineSpot", "ServeSpot", "WorkArea")]
+[node name="Shop" type="Node2D" unique_id=1744938923 node_paths=PackedStringArray("Door", "Counter", "SpawnTimer", "Barista", "BrewStationArea", "BrewSpot", "ServeSpot", "WorkArea")]
 script = ExtResource("1_100s2")
 CustomerScene = ExtResource("2_qaxay")
 Door = NodePath("Door")
 Counter = NodePath("Counter")
 SpawnTimer = NodePath("SpawnTimer")
-Menu = Array[ExtResource("3_ptf86")]([ExtResource("4_ge4d2"), ExtResource("5_xcdpw"), ExtResource("6_tp26b")])
+Menu = Array[ExtResource("3_ptf86")]([ExtResource("4_dww4p")])
 Barista = NodePath("Barista")
-CoffeeMachineArea = NodePath("CoffeeMachine/ClickArea")
-MachineSpot = NodePath("MachineSpot")
+BrewStationArea = NodePath("Kettle/ClickArea")
+BrewSpot = NodePath("BrewSpot")
 ServeSpot = NodePath("ServeSpot")
 WorkArea = NodePath("WorkArea")
 
-[node name="Floor" type="TextureRect" parent="." unique_id=364596943]
+[node name="Background" type="ColorRect" parent="." unique_id=1281561567]
 offset_right = 1152.0
+offset_bottom = 648.0
+mouse_filter = 2
+color = Color(0.18039216, 0.16470589, 0.14901961, 1)
+
+[node name="Floor" type="TextureRect" parent="." unique_id=364596943]
+offset_left = 320.0
+offset_top = 140.0
+offset_right = 832.0
 offset_bottom = 648.0
 mouse_filter = 2
 texture = ExtResource("7_vk20h")
 stretch_mode = 1
 
+[node name="Backwall" type="ColorRect" parent="." unique_id=345103831]
+offset_left = 320.0
+offset_top = 60.0
+offset_right = 832.0
+offset_bottom = 140.0
+mouse_filter = 2
+color = Color(0.9098039, 0.8627451, 0.78431374, 1)
+
 [node name="Barista" parent="." unique_id=406427301 instance=ExtResource("8_dww4p")]
-position = Vector2(575, 200)
+position = Vector2(576, 235)
 
 [node name="CounterTop" type="Sprite2D" parent="." unique_id=960711449]
-position = Vector2(575, 225)
-texture = ExtResource("8_8qn5i")
+position = Vector2(576, 250)
+texture = ExtResource("9_131kw")
 
-[node name="CoffeeMachine" type="Sprite2D" parent="." unique_id=1188766127]
+[node name="Kettle" type="Sprite2D" parent="." unique_id=1188766127]
 material = SubResource("ShaderMaterial_lu5oa")
-position = Vector2(660, 180)
-texture = ExtResource("9_dww4p")
+position = Vector2(640, 222)
+texture = ExtResource("11_xoc10")
 
-[node name="ClickArea" type="Area2D" parent="CoffeeMachine" unique_id=586938244 node_paths=PackedStringArray("OutlineTarget")]
+[node name="ClickArea" type="Area2D" parent="Kettle" unique_id=586938244 node_paths=PackedStringArray("OutlineTarget")]
 script = ExtResource("12_xoc10")
 OutlineTarget = NodePath("..")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="CoffeeMachine/ClickArea" unique_id=1413377494]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Kettle/ClickArea" unique_id=1413377494]
 shape = SubResource("RectangleShape2D_wvx66")
 
+[node name="Cups" type="Sprite2D" parent="." unique_id=1843635966]
+position = Vector2(515, 218)
+texture = ExtResource("13_k5co3")
+
 [node name="DoorSprite" type="Sprite2D" parent="." unique_id=221276468]
-position = Vector2(100, 552)
+position = Vector2(780, 592)
 texture = ExtResource("10_g6lcs")
 
 [node name="Door" type="Marker2D" parent="." unique_id=642480764]
-position = Vector2(100, 600)
+position = Vector2(780, 640)
 
 [node name="Counter" type="Marker2D" parent="." unique_id=2053379798]
-position = Vector2(575, 290)
+position = Vector2(576, 320)
 
-[node name="SpawnTimer" type="Timer" parent="." unique_id=90794252]
-wait_time = 3.0
-
-[node name="MachineSpot" type="Marker2D" parent="." unique_id=1969358492]
-position = Vector2(720, 200)
+[node name="BrewSpot" type="Marker2D" parent="." unique_id=1969358492]
+position = Vector2(600, 235)
 
 [node name="ServeSpot" type="Marker2D" parent="." unique_id=239140205]
-position = Vector2(575, 200)
+position = Vector2(576, 235)
 
 [node name="WorkArea" type="ReferenceRect" parent="." unique_id=1838124774]
-offset_left = 380.0
-offset_top = 140.0
-offset_right = 770.0
-offset_bottom = 205.0
+offset_left = 480.0
+offset_top = 180.0
+offset_right = 672.0
+offset_bottom = 235.0
 mouse_filter = 2
+
+[node name="SpawnTimer" type="Timer" parent="." unique_id=90794252]
+wait_time = 5.0

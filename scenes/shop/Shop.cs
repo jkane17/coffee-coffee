@@ -14,16 +14,16 @@ public partial class Shop : Node2D
 
     [ExportGroup("Barista")]
     [Export] public Barista Barista { get; set; } = null!;
-    [Export] public Area2D CoffeeMachineArea { get; set; } = null!;
-    /// <summary>Where the barista stands to use the coffee machine.</summary>
-    [Export] public Marker2D MachineSpot { get; set; } = null!;
+    [Export] public Area2D BrewStationArea { get; set; } = null!;
+    /// <summary>Where the barista stands to use the brew station.</summary>
+    [Export] public Marker2D BrewSpot { get; set; } = null!;
     /// <summary>Where the barista stands to serve the front customer.</summary>
     [Export] public Marker2D ServeSpot { get; set; } = null!;
     /// <summary>The area behind the counter the barista can walk in. Floor clicks outside it are clamped into it.</summary>
     [Export] public Control WorkArea { get; set; } = null!;
 
     [ExportGroup("Queue")]
-    [Export(PropertyHint.Range, "1,20,1")] public int MaxQueueLength { get; set; } = 5;
+    [Export(PropertyHint.Range, "1,20,1")] public int MaxQueueLength { get; set; } = 4;
     [Export] public float QueueSpacing { get; set; } = 60f;
 
     [ExportGroup("Day")]
@@ -110,10 +110,10 @@ public partial class Shop : Node2D
         GD.Print($"Day {_today.DayNumber}: the shop is open.");
     }
 
-    /// <summary>Send the barista to whatever was clicked: the coffee machine, a customer, or a spot on the floor.</summary>
+    /// <summary>Send the barista to whatever was clicked: the brew station, a customer, or a spot on the floor.</summary>
     private void OnClick(Vector2 globalPoint)
     {
-        // The barista stays at the machine until the drink is ready.
+        // The barista stays at the brew station until the drink is ready.
         if (Brewer.IsBusy)
         {
             return;
@@ -121,9 +121,9 @@ public partial class Shop : Node2D
 
         Area2D? clicked = FindAreaAt(globalPoint);
 
-        if (clicked == CoffeeMachineArea)
+        if (clicked == BrewStationArea)
         {
-            Barista.WalkTo(MachineSpot.GlobalPosition, UseCoffeeMachine);
+            Barista.WalkTo(BrewSpot.GlobalPosition, UseBrewStation);
         }
         else if (clicked?.GetParent() is Customer customer)
         {
@@ -161,16 +161,16 @@ public partial class Shop : Node2D
 
     private bool CanUse(Area2D area)
     {
-        if (area == CoffeeMachineArea)
+        if (area == BrewStationArea)
         {
-            return CanUseCoffeeMachine();
+            return CanUseBrewStation();
         }
 
         return area.GetParent() is Customer customer && CanServe(customer);
     }
 
-    /// <summary>The machine is usable when it's free, the barista's hands are empty, and the front customer has ordered.</summary>
-    private bool CanUseCoffeeMachine()
+    /// <summary>The brew station is usable when it's free, the barista's hands are empty, and the front customer has ordered.</summary>
+    private bool CanUseBrewStation()
     {
         return !Brewer.IsBusy && Barista.HeldDrink is null && _queue.Count > 0 && _queue[0].Order is not null;
     }
@@ -203,9 +203,9 @@ public partial class Shop : Node2D
     }
 
     /// <summary>Brew the front customer's order, if they've ordered and the barista's hands are free.</summary>
-    private void UseCoffeeMachine()
+    private void UseBrewStation()
     {
-        if (!CanUseCoffeeMachine())
+        if (!CanUseBrewStation())
         {
             return;
         }

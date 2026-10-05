@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="DrinkRecipe" format=3 uid="uid://dt7t8eyqsgieb"]
+
+[ext_resource type="Texture2D" uid="uid://cppsn85vmawnc" path="res://assets/art/drinks/instant_coffee.svg" id="1_1xga5"]
+[ext_resource type="Script" uid="uid://dld8qwimxwovx" path="res://game/orders/DrinkRecipe.cs" id="1_qw2lm"]
+
+[resource]
+script = ExtResource("1_qw2lm")
+DisplayName = "Instant Coffee"
+Price = 2
+BrewSeconds = 4.0
+Icon = ExtResource("1_1xga5")
+metadata/_custom_type_script = "uid://dld8qwimxwovx"

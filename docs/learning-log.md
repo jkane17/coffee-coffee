@@ -109,3 +109,7 @@ Godot concepts covered so far, so they don't get re-explained. Claude appends to
 - **Pause outlives scenes**: `Paused` belongs to the SceneTree, so unpause before changing scene. Used in: `PauseMenu.cs`
 - **Loading scenes by path**: `ChangeSceneToFile` + a `PropertyHint.File` string export avoids circular PackedScene references between scenes. Used in: `PauseMenu.cs`
 - **CanvasLayer Layer**: higher layers draw on top of lower ones (pause menu above the HUD). Used in: `pause_menu.tscn`
+
+## Starting store (step 16)
+- **Renaming exports**: a renamed `[Export]` is a new property to Godot; the old saved value is dropped and must be reassigned in the Inspector. Hit in: `Shop.cs` (`BrewStationArea`, `BrewSpot`)
+- **Keeping data for later**: resources and art not used yet (espresso, coffee machine) can stay in the project; only what's referenced in scenes gets used. Used in: `resources/drinks/`, `assets/art/shop/`
