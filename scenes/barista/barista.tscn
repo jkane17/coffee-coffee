@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://klsq871q5lpe"]
+
+[ext_resource type="Script" uid="uid://cu0tclxhobwfo" path="res://scenes/barista/Barista.cs" id="1_4r1d1"]
+[ext_resource type="Texture2D" uid="uid://clsj8rat7o2l1" path="res://assets/art/barista/barista.svg" id="2_fpq83"]
+
+[node name="Barista" type="Node2D" unique_id=406427301 node_paths=PackedStringArray("HeldDrinkSprite")]
+script = ExtResource("1_4r1d1")
+HeldDrinkSprite = NodePath("HeldDrink")
+
+[node name="Body" type="Sprite2D" parent="." unique_id=1583426475]
+texture = ExtResource("2_fpq83")
+offset = Vector2(0, -28)
+
+[node name="HeldDrink" type="Sprite2D" parent="." unique_id=283571589]
+visible = false
+position = Vector2(0, -72)

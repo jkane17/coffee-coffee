@@ -2,16 +2,25 @@ using System;
 using System.Collections.Generic;
 using Godot;
 
-/// <summary>The shop floor: runs the working day, spawns customers while open, lines them up, takes their orders and serves them.</summary>
+/// <summary>The shop floor: runs the working day, spawns customers while open, lines them up,
+/// and turns the player's clicks into barista actions (brewing and serving).</summary>
 public partial class Shop : Node2D
 {
-    private static readonly StringName ServeAction = "serve";
-
     [Export] public PackedScene CustomerScene { get; set; } = null!;
     [Export] public Marker2D Door { get; set; } = null!;
     [Export] public Marker2D Counter { get; set; } = null!;
     [Export] public Timer SpawnTimer { get; set; } = null!;
     [Export] public Godot.Collections.Array<DrinkRecipe> Menu { get; set; } = new();
+
+    [ExportGroup("Barista")]
+    [Export] public Barista Barista { get; set; } = null!;
+    [Export] public Area2D CoffeeMachineArea { get; set; } = null!;
+    /// <summary>Where the barista stands to use the coffee machine.</summary>
+    [Export] public Marker2D MachineSpot { get; set; } = null!;
+    /// <summary>Where the barista stands to serve the front customer.</summary>
+    [Export] public Marker2D ServeSpot { get; set; } = null!;
+    /// <summary>The area behind the counter the barista can walk in. Floor clicks outside it are clamped into it.</summary>
+    [Export] public Control WorkArea { get; set; } = null!;
 
     [ExportGroup("Queue")]
     [Export(PropertyHint.Range, "1,20,1")] public int MaxQueueLength { get; set; } = 5;
@@ -59,9 +68,10 @@ public partial class Shop : Node2D
 
     public override void _UnhandledInput(InputEvent @event)
     {
-        if (@event.IsActionPressed(ServeAction))
+        if (@event is InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true })
         {
-            StartBrewingNextOrder();
+            OnClick(GetGlobalMousePosition());
+            GetViewport().SetInputAsHandled();
         }
     }
 
@@ -80,6 +90,90 @@ public partial class Shop : Node2D
         SpawnTimer.Start();
         SpawnCustomer();
         GD.Print($"Day {_today.DayNumber}: the shop is open.");
+    }
+
+    /// <summary>Send the barista to whatever was clicked: the coffee machine, a customer, or a spot on the floor.</summary>
+    private void OnClick(Vector2 globalPoint)
+    {
+        // The barista stays at the machine until the drink is ready.
+        if (Brewer.IsBusy)
+        {
+            return;
+        }
+
+        Area2D? clicked = FindAreaAt(globalPoint);
+
+        if (clicked == CoffeeMachineArea)
+        {
+            Barista.WalkTo(MachineSpot.GlobalPosition, UseCoffeeMachine);
+        }
+        else if (clicked?.GetParent() is Customer customer)
+        {
+            Barista.WalkTo(ServeSpot.GlobalPosition, () => ServeCustomer(customer));
+        }
+        else
+        {
+            Rect2 workArea = WorkArea.GetGlobalRect();
+            Barista.WalkTo(globalPoint.Clamp(workArea.Position, workArea.End));
+        }
+    }
+
+    /// <summary>Ask the physics engine which Area2D, if any, is under a point.</summary>
+    private Area2D? FindAreaAt(Vector2 globalPoint)
+    {
+        PhysicsPointQueryParameters2D query = new()
+        {
+            Position = globalPoint,
+            CollideWithAreas = true,
+            CollideWithBodies = false,
+        };
+
+        foreach (Godot.Collections.Dictionary hit in GetWorld2D().DirectSpaceState.IntersectPoint(query))
+        {
+            if (hit["collider"].AsGodotObject() is Area2D area)
+            {
+                return area;
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>Brew the front customer's order, if they've ordered and the barista's hands are free.</summary>
+    private void UseCoffeeMachine()
+    {
+        if (Brewer.IsBusy || Barista.HeldDrink is not null || _queue.Count == 0 || _queue[0].Order is not DrinkRecipe order)
+        {
+            return;
+        }
+
+        _queue[0].StartBeingServed();
+        Brewer.Start(order);
+    }
+
+    private void OnBrewFinished(DrinkRecipe drink)
+    {
+        Barista.PickUp(drink);
+    }
+
+    /// <summary>Hand the held drink to the customer, if they're at the front and it's what they ordered.</summary>
+    private void ServeCustomer(Customer customer)
+    {
+        bool isAtFront = _queue.Count > 0 && _queue[0] == customer;
+        if (!isAtFront || Barista.HeldDrink is not DrinkRecipe drink || customer.Order != drink)
+        {
+            return;
+        }
+
+        Barista.HandOver();
+        _queue.RemoveAt(0);
+        customer.LeaveThrough(Door.GlobalPosition);
+        Till.AddSale(drink.Price);
+        _today.RecordSale(drink.Price);
+        GD.Print($"Served a {drink.DisplayName} for $ {drink.Price}.");
+
+        MoveQueueForward();
+        EndDayIfFinished();
     }
 
     private void OnClosingTime()
@@ -126,32 +220,6 @@ public partial class Shop : Node2D
         {
             customer.PlaceOrder(Menu[Random.Shared.Next(Menu.Count)]);
         }
-    }
-
-    /// <summary>Start brewing the front customer's order, if they've ordered and the brewer is free.</summary>
-    private void StartBrewingNextOrder()
-    {
-        if (Brewer.IsBusy || _queue.Count == 0 || _queue[0].Order is not DrinkRecipe order)
-        {
-            return;
-        }
-
-        _queue[0].StartBeingServed();
-        Brewer.Start(order);
-    }
-
-    /// <summary>The finished drink goes to the front customer, who pays and leaves.</summary>
-    private void OnBrewFinished(DrinkRecipe drink)
-    {
-        Customer served = _queue[0];
-        _queue.RemoveAt(0);
-        served.LeaveThrough(Door.GlobalPosition);
-        Till.AddSale(drink.Price);
-        _today.RecordSale(drink.Price);
-        GD.Print($"Served a {drink.DisplayName} for $ {drink.Price}.");
-
-        MoveQueueForward();
-        EndDayIfFinished();
     }
 
     /// <summary>An impatient customer leaves without paying, and everyone behind them moves up.</summary>

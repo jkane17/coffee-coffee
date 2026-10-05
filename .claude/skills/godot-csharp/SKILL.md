@@ -98,6 +98,27 @@ tween.TweenProperty(cup, Node2D.PropertyName.Position.ToString(), target, 0.4);
 Define actions in *Project → Project Settings → Input Map* (e.g. `interact`), then use
 `Input.IsActionJustPressed("interact")` or check `@event.IsActionPressed("interact")` in `_UnhandledInput`.
 
+### Mouse clicks
+```csharp
+public override void _UnhandledInput(InputEvent @event)
+{
+    if (@event is InputEventMouseButton { ButtonIndex: MouseButton.Left, Pressed: true })
+    {
+        Vector2 point = GetGlobalMousePosition();   // world position, on any CanvasItem
+        GetViewport().SetInputAsHandled();
+    }
+}
+```
+- Controls (UI) see clicks **before** `_UnhandledInput`. A Control with *Mouse → Filter* = **Stop** swallows clicks over its rect. Set **Ignore** on decorative Controls (backgrounds, icons, progress bars, editor-only rects). Leave **Stop** on panels that should block the game, like modal dialogs.
+- To find what's under a click, give it an `Area2D` + `CollisionShape2D` and query the physics space:
+```csharp
+PhysicsPointQueryParameters2D query = new() { Position = point, CollideWithAreas = true, CollideWithBodies = false };
+foreach (Godot.Collections.Dictionary hit in GetWorld2D().DirectSpaceState.IntersectPoint(query))
+{
+    if (hit["collider"].AsGodotObject() is Area2D area) { /* clicked area */ }
+}
+```
+
 ## Collections
 Use `System.Collections.Generic` (`List<T>`, `Dictionary<K,V>`) normally. Use `Godot.Collections.Array<T>` / `Dictionary` only for `[Export]`s and signal parameters.
 

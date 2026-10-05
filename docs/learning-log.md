@@ -68,3 +68,11 @@ Godot concepts covered so far, so they don't get re-explained. Claude appends to
 - **Exports and access**: `[Export]` works on private members too, so the Inspector can set a value other scripts can't read. Members without a modifier are private; use `public` when other classes need them. Hit in: `game/orders/DrinkRecipe.cs`
 - **Visibility is inherited**: a hidden parent hides all its children whatever their own `Visible` says, so toggle the container, not its parts. Used in: `scenes/customer/customer.tscn`
 - **TextureRect in a container**: shows a texture as a Control so it can sit in an HBoxContainer next to a Label. Used in: `customer.tscn`
+
+## Point-and-click barista (step 10)
+- **Mouse input**: `InputEventMouseButton` with pattern matching, `GetGlobalMousePosition()` for the world position. Used in: `scenes/shop/Shop.cs`
+- **Mouse filter**: Controls receive clicks before `_UnhandledInput`; `Stop` swallows them, `Ignore` lets them through. Used in: `shop.tscn`, `customer.tscn`, `hud.tscn`
+- **Area2D + CollisionShape2D**: an invisible shape other systems can detect; here, what the player clicked. Used in: `customer.tscn`, `shop.tscn`
+- **Physics point query**: `DirectSpaceState.IntersectPoint` lists the areas/bodies under a point. Used in: `Shop.cs`
+- **ReferenceRect**: an outline that only draws in the editor; handy for marking zones like the work area. Used in: `shop.tscn`
+- **Callbacks with Action**: `WalkTo(target, onArrived)` runs code when the walk finishes; a new walk replaces the old callback. Used in: `scenes/barista/Barista.cs`
