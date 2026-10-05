@@ -1,10 +1,12 @@
 [gd_scene format=3 uid="uid://din7ukq7ti18x"]
 
 [ext_resource type="Script" uid="uid://dno1pxkjopaih" path="res://scenes/ui/Hud.cs" id="1_0mwgc"]
+[ext_resource type="Script" uid="uid://dklmml7gd3g74" path="res://scenes/ui/BrewStatus.cs" id="2_hqnrr"]
 
-[node name="Hud" type="CanvasLayer" unique_id=1516447156 node_paths=PackedStringArray("MoneyLabel")]
+[node name="Hud" type="CanvasLayer" unique_id=1516447156 node_paths=PackedStringArray("MoneyLabel", "BrewStatus")]
 script = ExtResource("1_0mwgc")
 MoneyLabel = NodePath("MoneyLabel")
+BrewStatus = NodePath("BrewStatus")
 
 [node name="MoneyLabel" type="Label" parent="." unique_id=1799306082]
 offset_left = 16.0
@@ -16,3 +18,20 @@ theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 6
 theme_override_font_sizes/font_size = 32
 text = "$ 0"
+
+[node name="BrewStatus" type="VBoxContainer" parent="." unique_id=189333286 node_paths=PackedStringArray("DrinkLabel", "BrewBar")]
+offset_left = 16.0
+offset_top = 64.0
+offset_right = 276.0
+offset_bottom = 64.0
+script = ExtResource("2_hqnrr")
+DrinkLabel = NodePath("DrinkLabel")
+BrewBar = NodePath("BrewBar")
+
+[node name="DrinkLabel" type="Label" parent="BrewStatus" unique_id=741292846]
+layout_mode = 2
+text = "Brewing Latte..."
+
+[node name="BrewBar" type="ProgressBar" parent="BrewStatus" unique_id=1716398686]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2

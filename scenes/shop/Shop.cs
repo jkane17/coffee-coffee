@@ -22,6 +22,9 @@ public partial class Shop : Node2D
     /// <summary>The shop's money. Exposed so UI can observe it.</summary>
     public Till Till { get; } = new();
 
+    /// <summary>Brews the front customer's order. Exposed so UI can observe it.</summary>
+    public Brewer Brewer { get; } = new();
+
     public override void _Ready()
     {
         if (Menu.Count == 0)
@@ -30,14 +33,20 @@ public partial class Shop : Node2D
         }
 
         SpawnTimer.Timeout += OnSpawnTimerTimeout;
+        Brewer.BrewFinished += OnBrewFinished;
         SpawnCustomer();
+    }
+
+    public override void _Process(double delta)
+    {
+        Brewer.Tick(delta);
     }
 
     public override void _UnhandledInput(InputEvent @event)
     {
         if (@event.IsActionPressed(ServeAction))
         {
-            ServeNextCustomer();
+            StartBrewingNextOrder();
         }
     }
 
@@ -69,19 +78,25 @@ public partial class Shop : Node2D
         }
     }
 
-    /// <summary>Serve the customer at the front of the line, once they've ordered.</summary>
-    private void ServeNextCustomer()
+    /// <summary>Start brewing the front customer's order, if they've ordered and the brewer is free.</summary>
+    private void StartBrewingNextOrder()
     {
-        if (_queue.Count == 0 || _queue[0].Order is not DrinkRecipe order)
+        if (Brewer.IsBusy || _queue.Count == 0 || _queue[0].Order is not DrinkRecipe order)
         {
             return;
         }
 
+        Brewer.Start(order);
+    }
+
+    /// <summary>The finished drink goes to the front customer, who pays and leaves.</summary>
+    private void OnBrewFinished(DrinkRecipe drink)
+    {
         Customer served = _queue[0];
         _queue.RemoveAt(0);
         served.LeaveThrough(Door.GlobalPosition);
-        Till.AddSale(order.Price);
-        GD.Print($"Served a {order.DisplayName} for $ {order.Price}.");
+        Till.AddSale(drink.Price);
+        GD.Print($"Served a {drink.DisplayName} for $ {drink.Price}.");
 
         MoveQueueForward();
     }

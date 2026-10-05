@@ -9,5 +9,6 @@ public partial class Main : Node
     public override void _Ready()
     {
         Hud.ShowTill(Shop.Till);
+        Hud.ShowBrewer(Shop.Brewer);
     }
 }

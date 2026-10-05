@@ -4,8 +4,11 @@ using Godot;
 public partial class Hud : CanvasLayer
 {
     [Export] public Label MoneyLabel { get; set; } = null!;
+    [Export] public BrewStatus BrewStatus { get; set; } = null!;
 
     private Till? _till;
+
+    public void ShowBrewer(Brewer brewer) => BrewStatus.ShowBrewer(brewer);
 
     /// <summary>Start displaying the given till's balance, replacing any till shown before.</summary>
     public void ShowTill(Till till)

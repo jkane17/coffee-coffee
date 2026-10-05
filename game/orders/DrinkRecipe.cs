@@ -6,4 +6,5 @@ public partial class DrinkRecipe : Resource
 {
     [Export] public string DisplayName { get; set; } = "";
     [Export(PropertyHint.Range, "1,100,1")] public int Price { get; set; } = 3;
+    [Export(PropertyHint.Range, "0.1,30,0.1,suffix:s")] public float BrewSeconds { get; set; } = 2f;
 }

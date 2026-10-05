@@ -37,3 +37,10 @@ Godot concepts covered so far, so they don't get re-explained. Claude appends to
 - **Unsubscribing C# events in _ExitTree**: plain C# objects can outlive nodes; unsubscribe to avoid calls into freed nodes. Used in: `scenes/ui/Hud.cs`
 - **Theme overrides**: per-Control tweaks like font size under Inspector → Theme Overrides. Used in: `scenes/ui/hud.tscn`
 - **Debugging an unassigned export**: a `NullReferenceException` points at the line that *used* the null reference, not where setup was missed. Check the Inspector (or the `.tscn` for a missing `NodePath`) for unassigned exports. Hit in: `scenes/ui/hud.tscn`
+
+## Brewing (step 6)
+- **Ticking a plain C# system**: `Brewer` has no `_Process` of its own; its owner calls `Tick(delta)` each frame, keeping it engine-independent. Used in: `game/orders/Brewer.cs`, `Shop.cs`
+- **Events vs polling**: use events for one-off changes (brew started/finished), poll for values that change every frame (progress). Used in: `scenes/ui/BrewStatus.cs`
+- **Containers (VBoxContainer)**: arrange child Controls automatically; children's position/size are managed by the container. Used in: `scenes/ui/hud.tscn`
+- **ProgressBar**: a Control showing `Value` between `MinValue` and `MaxValue`. Used in: `scenes/ui/hud.tscn`
+- **PropertyHint suffix**: `"0.1,30,0.1,suffix:s"` shows units in the Inspector. Used in: `DrinkRecipe.cs`
