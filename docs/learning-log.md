@@ -28,3 +28,12 @@ Godot concepts covered so far, so they don't get re-explained. Claude appends to
 - **Exporting a typed array**: `Godot.Collections.Array<DrinkRecipe>` shows as an editable list in the Inspector. Used in: `Shop.cs`
 - **Label**: a Control that shows text; Controls can be children of Node2D scenes. Used in: `scenes/customer/customer.tscn`
 - **Plain C# systems**: gameplay logic with no Godot types (e.g. `Till`) uses C# `event`s instead of `[Signal]`. Used in: `game/economy/Till.cs`
+
+## Money display (step 5)
+- **CanvasLayer**: draws its children on a separate layer above the game world, unaffected by cameras. Standard root for HUDs. Used in: `scenes/ui/hud.tscn`
+- **Instancing scenes in the editor**: the chain-link button adds a saved scene as a child of another scene. Used in: `scenes/main/main.tscn`
+- **Main scene as composition root**: a top-level scene that owns gameplay and UI scenes and wires them together, so neither references the other. Used in: `scenes/main/Main.cs`
+- **_Ready order**: children are ready before their parent, so a parent's `_Ready` can safely use its children. Used in: `Main.cs`
+- **Unsubscribing C# events in _ExitTree**: plain C# objects can outlive nodes; unsubscribe to avoid calls into freed nodes. Used in: `scenes/ui/Hud.cs`
+- **Theme overrides**: per-Control tweaks like font size under Inspector → Theme Overrides. Used in: `scenes/ui/hud.tscn`
+- **Debugging an unassigned export**: a `NullReferenceException` points at the line that *used* the null reference, not where setup was missed. Check the Inspector (or the `.tscn` for a missing `NodePath`) for unassigned exports. Hit in: `scenes/ui/hud.tscn`

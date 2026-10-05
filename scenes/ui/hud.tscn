@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://din7ukq7ti18x"]
+
+[ext_resource type="Script" uid="uid://dno1pxkjopaih" path="res://scenes/ui/Hud.cs" id="1_0mwgc"]
+
+[node name="Hud" type="CanvasLayer" unique_id=1516447156 node_paths=PackedStringArray("MoneyLabel")]
+script = ExtResource("1_0mwgc")
+MoneyLabel = NodePath("MoneyLabel")
+
+[node name="MoneyLabel" type="Label" parent="." unique_id=1799306082]
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 70.0
+offset_bottom = 39.0
+theme_override_colors/font_color = Color(0, 0.6862745, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 32
+text = "$ 0"

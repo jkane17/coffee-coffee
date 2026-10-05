@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://b3b2paxha6mco"]
+
+[ext_resource type="Script" uid="uid://c4nobntnohnsm" path="res://scenes/main/Main.cs" id="1_k2fmo"]
+[ext_resource type="PackedScene" uid="uid://bj2hefwjgn15e" path="res://scenes/shop/shop.tscn" id="2_l3cfh"]
+[ext_resource type="PackedScene" uid="uid://din7ukq7ti18x" path="res://scenes/ui/hud.tscn" id="3_6q06x"]
+
+[node name="Main" type="Node" unique_id=1090373094 node_paths=PackedStringArray("Shop", "Hud")]
+script = ExtResource("1_k2fmo")
+Shop = NodePath("Shop")
+Hud = NodePath("Hud")
+
+[node name="Shop" parent="." unique_id=1744938923 instance=ExtResource("2_l3cfh")]
+
+[node name="Hud" parent="." unique_id=1516447156 instance=ExtResource("3_6q06x")]

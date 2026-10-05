@@ -18,7 +18,9 @@ public partial class Shop : Node2D
     [Export] public float QueueSpacing { get; set; } = 60f;
 
     private readonly List<Customer> _queue = new();
-    private readonly Till _till = new();
+
+    /// <summary>The shop's money. Exposed so UI can observe it.</summary>
+    public Till Till { get; } = new();
 
     public override void _Ready()
     {
@@ -27,7 +29,6 @@ public partial class Shop : Node2D
             GD.PushError("The shop's Menu is empty. Add DrinkRecipe resources to it in the Inspector.");
         }
 
-        _till.BalanceChanged += OnBalanceChanged;
         SpawnTimer.Timeout += OnSpawnTimerTimeout;
         SpawnCustomer();
     }
@@ -79,15 +80,10 @@ public partial class Shop : Node2D
         Customer served = _queue[0];
         _queue.RemoveAt(0);
         served.LeaveThrough(Door.GlobalPosition);
-        _till.AddSale(order.Price);
-        GD.Print($"Served a {order.DisplayName} for {order.Price} coins.");
+        Till.AddSale(order.Price);
+        GD.Print($"Served a {order.DisplayName} for $ {order.Price}.");
 
         MoveQueueForward();
-    }
-
-    private void OnBalanceChanged(int balance)
-    {
-        GD.Print($"Till: {balance} coins.");
     }
 
     private void MoveQueueForward()
