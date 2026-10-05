@@ -14,6 +14,7 @@ Door = NodePath("Door")
 Counter = NodePath("Counter")
 SpawnTimer = NodePath("SpawnTimer")
 Menu = Array[ExtResource("3_ptf86")]([ExtResource("4_ge4d2"), ExtResource("5_xcdpw"), ExtResource("6_tp26b")])
+DayLengthSeconds = 30.0
 
 [node name="Floor" type="ColorRect" parent="." unique_id=1628687921]
 offset_right = 1152.0
@@ -35,4 +36,3 @@ position = Vector2(575, 290)
 
 [node name="SpawnTimer" type="Timer" parent="." unique_id=90794252]
 wait_time = 3.0
-autostart = true

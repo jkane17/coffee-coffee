@@ -10,5 +10,11 @@ public partial class Main : Node
     {
         Hud.ShowTill(Shop.Till);
         Hud.ShowBrewer(Shop.Brewer);
+        Hud.ShowClock(Shop.Clock);
+
+        Shop.DayEnded += Hud.ShowDaySummary;
+        Hud.NextDayRequested += Shop.StartDay;
+
+        Shop.StartDay();
     }
 }

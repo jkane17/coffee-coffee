@@ -49,3 +49,10 @@ Godot concepts covered so far, so they don't get re-explained. Claude appends to
 - **Modulate**: tints a CanvasItem and its children by multiplying their colours; `Colors.White` means no tint. Used in: `scenes/customer/Customer.cs`
 - **Color.Lerp**: blends between two colours by a 0–1 weight, handy for showing a value visually. Used in: `Customer.cs`
 - **Exporting a base type**: `[Export] CanvasItem Body` accepts any CanvasItem (ColorRect now, Sprite2D later), so the art can change without code changes. Used in: `Customer.cs`
+
+## Day cycle (step 8)
+- **Starting and stopping a Timer from code**: `Start()` / `Stop()` instead of Autostart, so the owner controls when it runs. Used in: `Shop.cs`
+- **Button + Pressed signal**: the built-in signal fired when a Button is clicked or activated by keyboard. Used in: `scenes/ui/DaySummary.cs`
+- **Focus (GrabFocus)**: the focused Control receives keyboard input; a focused Button is pressed with Space/Enter, and that input never reaches `_UnhandledInput`. Used in: `DaySummary.cs`
+- **PanelContainer**: a container that draws a background panel behind its single child. Used in: `scenes/ui/hud.tscn`
+- **Anchors / layout presets**: pin a Control to a screen edge or centre so it stays put when the window resizes. Used in: `scenes/ui/hud.tscn`
