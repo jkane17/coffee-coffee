@@ -113,3 +113,8 @@ Godot concepts covered so far, so they don't get re-explained. Claude appends to
 ## Starting store (step 16)
 - **Renaming exports**: a renamed `[Export]` is a new property to Godot; the old saved value is dropped and must be reassigned in the Inspector. Hit in: `Shop.cs` (`BrewStationArea`, `BrewSpot`)
 - **Keeping data for later**: resources and art not used yet (espresso, coffee machine) can stay in the project; only what's referenced in scenes gets used. Used in: `resources/drinks/`, `assets/art/shop/`
+
+## Decoration (step 17)
+- **Grouping with a Node2D**: a plain Node2D parent keeps related nodes together; moving or hiding the parent affects them all. Used in: `scenes/shop/shop.tscn` (`Decor`)
+- **Sprite2D Centered**: off means the texture's top-left corner sits at the node's position, useful for things anchored to a corner. Used in: `shop.tscn` (cobweb)
+- **CanvasModulate**: tints everything on its canvas layer (the shop) but not other CanvasLayers (the HUD), for cheap mood lighting. Used in: `shop.tscn`

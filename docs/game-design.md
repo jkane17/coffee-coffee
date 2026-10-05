@@ -27,5 +27,17 @@ Money earned is spent between days on upgrades. Planned categories:
 - Menu: Instant Coffee only ($2, 4 s to boil).
 - Short queue (4) and a customer every ~5 s.
 
+## Decor that tells the story
+Props in the starting store show it's inherited and a bit neglected. Several are meant to be improved by Decor upgrades:
+
+| Prop | Upgrade idea |
+|---|---|
+| Dusty window with a taped crack | Clean / replace the window |
+| Wilted plant | Revive it, then add more plants |
+| Cardboard boxes | Clear them out to free floor space |
+| Cobweb | Deep clean |
+| Faded photo of the previous owner | Story hook (who left the store?) |
+| Handmade cardboard OPEN sign | Replace with a proper shop sign |
+
 ## Future unlocks already in the project
 Espresso, Latte and Cappuccino recipes exist in `resources/drinks/` but are not on the starting menu. The coffee machine and large counter art in `assets/art/shop/` are for later upgrades.
