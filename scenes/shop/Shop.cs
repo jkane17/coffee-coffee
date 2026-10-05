@@ -34,6 +34,7 @@ public partial class Shop : Node2D
     private readonly List<Customer> _queue = new();
     private DayStats _today = new(0);
     private bool _isDayRunning;
+    private Clickable? _highlighted;
 
     /// <summary>The shop's money. Exposed so UI can observe it.</summary>
     public Till Till { get; } = new();
@@ -64,6 +65,7 @@ public partial class Shop : Node2D
     {
         Clock.Tick(delta);
         Brewer.Tick(delta);
+        UpdateHighlight();
     }
 
     public override void _UnhandledInput(InputEvent @event)
@@ -118,6 +120,51 @@ public partial class Shop : Node2D
         }
     }
 
+    /// <summary>Outline whatever is under the mouse if clicking it would do something right now, and show a hand cursor.
+    /// Checked every frame, because what's usable changes even when the mouse doesn't move (e.g. a brew finishing).</summary>
+    private void UpdateHighlight()
+    {
+        Clickable? hovered = FindAreaAt(GetGlobalMousePosition()) as Clickable;
+        Clickable? usable = hovered is not null && CanUse(hovered) ? hovered : null;
+
+        if (usable == _highlighted)
+        {
+            return;
+        }
+
+        // The previous target may be a customer who has since been freed.
+        if (_highlighted is not null && IsInstanceValid(_highlighted))
+        {
+            _highlighted.SetHighlighted(false);
+        }
+
+        _highlighted = usable;
+        _highlighted?.SetHighlighted(true);
+        Input.SetDefaultCursorShape(_highlighted is null ? Input.CursorShape.Arrow : Input.CursorShape.PointingHand);
+    }
+
+    private bool CanUse(Area2D area)
+    {
+        if (area == CoffeeMachineArea)
+        {
+            return CanUseCoffeeMachine();
+        }
+
+        return area.GetParent() is Customer customer && CanServe(customer);
+    }
+
+    /// <summary>The machine is usable when it's free, the barista's hands are empty, and the front customer has ordered.</summary>
+    private bool CanUseCoffeeMachine()
+    {
+        return !Brewer.IsBusy && Barista.HeldDrink is null && _queue.Count > 0 && _queue[0].Order is not null;
+    }
+
+    /// <summary>A customer can be served when they're at the front and the barista is holding what they ordered.</summary>
+    private bool CanServe(Customer customer)
+    {
+        return _queue.Count > 0 && _queue[0] == customer && Barista.HeldDrink is not null && customer.Order == Barista.HeldDrink;
+    }
+
     /// <summary>Ask the physics engine which Area2D, if any, is under a point.</summary>
     private Area2D? FindAreaAt(Vector2 globalPoint)
     {
@@ -142,13 +189,13 @@ public partial class Shop : Node2D
     /// <summary>Brew the front customer's order, if they've ordered and the barista's hands are free.</summary>
     private void UseCoffeeMachine()
     {
-        if (Brewer.IsBusy || Barista.HeldDrink is not null || _queue.Count == 0 || _queue[0].Order is not DrinkRecipe order)
+        if (!CanUseCoffeeMachine())
         {
             return;
         }
 
         _queue[0].StartBeingServed();
-        Brewer.Start(order);
+        Brewer.Start(_queue[0].Order!);
     }
 
     private void OnBrewFinished(DrinkRecipe drink)
@@ -159,12 +206,12 @@ public partial class Shop : Node2D
     /// <summary>Hand the held drink to the customer, if they're at the front and it's what they ordered.</summary>
     private void ServeCustomer(Customer customer)
     {
-        bool isAtFront = _queue.Count > 0 && _queue[0] == customer;
-        if (!isAtFront || Barista.HeldDrink is not DrinkRecipe drink || customer.Order != drink)
+        if (!CanServe(customer))
         {
             return;
         }
 
+        DrinkRecipe drink = Barista.HeldDrink!;
         Barista.HandOver();
         _queue.RemoveAt(0);
         customer.LeaveThrough(Door.GlobalPosition);

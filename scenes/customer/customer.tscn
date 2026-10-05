@@ -4,7 +4,16 @@
 [ext_resource type="Texture2D" uid="uid://d2wlvfo07n20u" path="res://assets/art/customers/customer_1.svg" id="2_duem0"]
 [ext_resource type="Texture2D" uid="uid://ck7cdjrvvyibk" path="res://assets/art/customers/customer_2.svg" id="3_fd46v"]
 [ext_resource type="Texture2D" uid="uid://do4fmlnb2aee0" path="res://assets/art/customers/customer_3.svg" id="4_k1bqq"]
+[ext_resource type="Shader" uid="uid://b8m1171aqstb" path="res://scenes/common/outline.gdshader" id="5_jy5aj"]
 [ext_resource type="Texture2D" uid="uid://c55mhv5qljxwg" path="res://assets/art/drinks/latte.svg" id="5_k1bqq"]
+[ext_resource type="Script" uid="uid://b37paq3exwaeg" path="res://scenes/common/Clickable.cs" id="6_6bdyt"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jy5aj"]
+resource_local_to_scene = true
+shader = ExtResource("5_jy5aj")
+shader_parameter/enabled = false
+shader_parameter/outline_color = Color(1, 0.92, 0.55, 1)
+shader_parameter/width = 2.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wvx66"]
 size = Vector2(40, 56)
@@ -18,6 +27,7 @@ Body = NodePath("Body")
 Looks = Array[Texture2D]([ExtResource("2_duem0"), ExtResource("3_fd46v"), ExtResource("4_k1bqq")])
 
 [node name="Body" type="Sprite2D" parent="." unique_id=2038738664]
+material = SubResource("ShaderMaterial_jy5aj")
 texture = ExtResource("2_duem0")
 offset = Vector2(0, -28)
 
@@ -39,7 +49,9 @@ layout_mode = 2
 text = "Latte"
 horizontal_alignment = 1
 
-[node name="ClickArea" type="Area2D" parent="." unique_id=513965370]
+[node name="ClickArea" type="Area2D" parent="." unique_id=513965370 node_paths=PackedStringArray("OutlineTarget")]
+script = ExtResource("6_6bdyt")
+OutlineTarget = NodePath("../Body")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ClickArea" unique_id=955197746]
 position = Vector2(0, -28)

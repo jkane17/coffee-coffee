@@ -10,7 +10,15 @@
 [ext_resource type="Texture2D" uid="uid://byc7s3fpxir3g" path="res://assets/art/shop/counter.svg" id="8_8qn5i"]
 [ext_resource type="PackedScene" uid="uid://klsq871q5lpe" path="res://scenes/barista/barista.tscn" id="8_dww4p"]
 [ext_resource type="Texture2D" uid="uid://cy3mr5j0xqhpp" path="res://assets/art/shop/coffee_machine.svg" id="9_dww4p"]
+[ext_resource type="Shader" uid="uid://b8m1171aqstb" path="res://scenes/common/outline.gdshader" id="10_131kw"]
 [ext_resource type="Texture2D" uid="uid://c8caa41qua05f" path="res://assets/art/shop/door.svg" id="10_g6lcs"]
+[ext_resource type="Script" uid="uid://b37paq3exwaeg" path="res://scenes/common/Clickable.cs" id="12_xoc10"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_lu5oa"]
+shader = ExtResource("10_131kw")
+shader_parameter/enabled = false
+shader_parameter/outline_color = Color(1, 0.92, 0.55, 1)
+shader_parameter/width = 2.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wvx66"]
 size = Vector2(64, 60)
@@ -43,10 +51,13 @@ position = Vector2(575, 225)
 texture = ExtResource("8_8qn5i")
 
 [node name="CoffeeMachine" type="Sprite2D" parent="." unique_id=1188766127]
+material = SubResource("ShaderMaterial_lu5oa")
 position = Vector2(660, 180)
 texture = ExtResource("9_dww4p")
 
-[node name="ClickArea" type="Area2D" parent="CoffeeMachine" unique_id=586938244]
+[node name="ClickArea" type="Area2D" parent="CoffeeMachine" unique_id=586938244 node_paths=PackedStringArray("OutlineTarget")]
+script = ExtResource("12_xoc10")
+OutlineTarget = NodePath("..")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CoffeeMachine/ClickArea" unique_id=1413377494]
 shape = SubResource("RectangleShape2D_wvx66")

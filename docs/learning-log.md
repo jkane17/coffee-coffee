@@ -76,3 +76,11 @@ Godot concepts covered so far, so they don't get re-explained. Claude appends to
 - **Physics point query**: `DirectSpaceState.IntersectPoint` lists the areas/bodies under a point. Used in: `Shop.cs`
 - **ReferenceRect**: an outline that only draws in the editor; handy for marking zones like the work area. Used in: `shop.tscn`
 - **Callbacks with Action**: `WalkTo(target, onArrived)` runs code when the walk finishes; a new walk replaces the old callback. Used in: `scenes/barista/Barista.cs`
+
+## Hover feedback (step 11)
+- **Shaders (canvas_item)**: small GPU programs run per pixel; `fragment()` sets each pixel's `COLOR`, `vertex()` runs per corner. Used in: `scenes/common/outline.gdshader`
+- **Uniforms + ShaderMaterial**: a shader's `uniform`s show in the Inspector under the material; set them from C# with `SetShaderParameter`. Used in: `scenes/common/Clickable.cs`
+- **Local To Scene**: resources are shared between instances by default; ticking *Local To Scene* gives each scene instance its own copy (here, one material per customer). Used in: `scenes/customer/customer.tscn`
+- **Cursor shapes**: `Input.SetDefaultCursorShape` switches the OS cursor, e.g. to a pointing hand. Used in: `Shop.cs`
+- **IsInstanceValid**: checks whether a stored node reference has been freed before touching it. Used in: `Shop.cs`
+- **Shader values flow into COLOR**: uniforms are read-only inputs, and a calculation only matters if it feeds the final `COLOR`. `TIME` gives seconds since start for animation. Shaders recompile on save; errors show in the shader editor and Output. Used in: `outline.gdshader`
