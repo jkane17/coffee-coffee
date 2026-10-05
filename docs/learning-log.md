@@ -44,3 +44,8 @@ Godot concepts covered so far, so they don't get re-explained. Claude appends to
 - **Containers (VBoxContainer)**: arrange child Controls automatically; children's position/size are managed by the container. Used in: `scenes/ui/hud.tscn`
 - **ProgressBar**: a Control showing `Value` between `MinValue` and `MaxValue`. Used in: `scenes/ui/hud.tscn`
 - **PropertyHint suffix**: `"0.1,30,0.1,suffix:s"` shows units in the Inspector. Used in: `DrinkRecipe.cs`
+
+## Customer patience (step 7)
+- **Modulate**: tints a CanvasItem and its children by multiplying their colours; `Colors.White` means no tint. Used in: `scenes/customer/Customer.cs`
+- **Color.Lerp**: blends between two colours by a 0–1 weight, handy for showing a value visually. Used in: `Customer.cs`
+- **Exporting a base type**: `[Export] CanvasItem Body` accepts any CanvasItem (ColorRect now, Sprite2D later), so the art can change without code changes. Used in: `Customer.cs`

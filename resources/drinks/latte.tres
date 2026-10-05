@@ -6,4 +6,5 @@
 script = ExtResource("1_nvihm")
 DisplayName = "Latte"
 Price = 4
+BrewSeconds = 3.0
 metadata/_custom_type_script = "uid://dld8qwimxwovx"

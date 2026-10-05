@@ -64,6 +64,7 @@ public partial class Shop : Node2D
         AddChild(customer);
         customer.GlobalPosition = Door.GlobalPosition;
         customer.Arrived += () => OnCustomerArrived(customer);
+        customer.GaveUp += () => OnCustomerGaveUp(customer);
         customer.WalkTo(GetQueueSlotPosition(_queue.Count));
         _queue.Add(customer);
     }
@@ -86,6 +87,7 @@ public partial class Shop : Node2D
             return;
         }
 
+        _queue[0].StartBeingServed();
         Brewer.Start(order);
     }
 
@@ -97,6 +99,16 @@ public partial class Shop : Node2D
         served.LeaveThrough(Door.GlobalPosition);
         Till.AddSale(drink.Price);
         GD.Print($"Served a {drink.DisplayName} for $ {drink.Price}.");
+
+        MoveQueueForward();
+    }
+
+    /// <summary>An impatient customer leaves without paying, and everyone behind them moves up.</summary>
+    private void OnCustomerGaveUp(Customer customer)
+    {
+        _queue.Remove(customer);
+        customer.LeaveThrough(Door.GlobalPosition);
+        GD.Print($"A customer gave up waiting ({_queue.Count} still waiting).");
 
         MoveQueueForward();
     }

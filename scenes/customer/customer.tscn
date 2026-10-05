@@ -2,11 +2,12 @@
 
 [ext_resource type="Script" uid="uid://dmgr52phms70g" path="res://scenes/customer/Customer.cs" id="1_8noaa"]
 
-[node name="Customer" type="Node2D" unique_id=783073232 node_paths=PackedStringArray("OrderLabel")]
+[node name="Customer" type="Node2D" unique_id=783073232 node_paths=PackedStringArray("OrderLabel", "Body")]
 script = ExtResource("1_8noaa")
 OrderLabel = NodePath("OrderLabel")
+Body = NodePath("Body")
 
-[node name="ColorRect" type="ColorRect" parent="." unique_id=2009281923]
+[node name="Body" type="ColorRect" parent="." unique_id=2009281923]
 offset_left = -16.0
 offset_top = -48.0
 offset_right = 16.0
