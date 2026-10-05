@@ -14,6 +14,8 @@ public partial class Customer : Node2D
 
     [Export] public float WalkSpeed { get; set; } = 120f;
     [Export] public Label OrderLabel { get; set; } = null!;
+    [Export] public TextureRect OrderIcon { get; set; } = null!;
+    [Export] public Control OrderBubble { get; set; } = null!;
 
     /// <summary>The customer's sprite. Gets a random look on spawn and is tinted towards red as patience runs out.</summary>
     [Export] public Sprite2D Body { get; set; } = null!;
@@ -51,7 +53,8 @@ public partial class Customer : Node2D
     {
         Order = drink;
         OrderLabel.Text = drink.DisplayName;
-        OrderLabel.Visible = true;
+        OrderIcon.Texture = drink.Icon;
+        OrderBubble.Visible = true;
     }
 
     /// <summary>Their drink is being made: stop losing patience.</summary>
@@ -65,7 +68,7 @@ public partial class Customer : Node2D
     public void LeaveThrough(Vector2 globalExit)
     {
         _isLeaving = true;
-        OrderLabel.Visible = false;
+        OrderBubble.Visible = false;
         WalkTo(globalExit);
     }
 

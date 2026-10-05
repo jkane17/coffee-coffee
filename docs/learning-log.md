@@ -63,3 +63,8 @@ Godot concepts covered so far, so they don't get re-explained. Claude appends to
 - **Change Type**: right-click a node → Change Type swaps its class but keeps its name, children and compatible properties. Used in: `customer.tscn`, `shop.tscn`
 - **TextureRect with Stretch Mode Tile**: repeats a texture to fill a Control's rect, good for floors and backgrounds. Used in: `shop.tscn`
 - **Draw order**: siblings later in the tree draw on top; runtime-added children go last, so customers draw over the scenery. Used in: `shop.tscn`
+
+## Drink icons (exercise)
+- **Exports and access**: `[Export]` works on private members too, so the Inspector can set a value other scripts can't read. Members without a modifier are private; use `public` when other classes need them. Hit in: `game/orders/DrinkRecipe.cs`
+- **Visibility is inherited**: a hidden parent hides all its children whatever their own `Visible` says, so toggle the container, not its parts. Used in: `scenes/customer/customer.tscn`
+- **TextureRect in a container**: shows a texture as a Control so it can sit in an HBoxContainer next to a Label. Used in: `customer.tscn`

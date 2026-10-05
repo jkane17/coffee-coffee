@@ -1,5 +1,6 @@
 [gd_resource type="Resource" script_class="DrinkRecipe" format=3 uid="uid://culsaao3corts"]
 
+[ext_resource type="Texture2D" uid="uid://c55mhv5qljxwg" path="res://assets/art/drinks/latte.svg" id="1_2w4yl"]
 [ext_resource type="Script" uid="uid://dld8qwimxwovx" path="res://game/orders/DrinkRecipe.cs" id="1_nvihm"]
 
 [resource]
@@ -7,4 +8,5 @@ script = ExtResource("1_nvihm")
 DisplayName = "Latte"
 Price = 4
 BrewSeconds = 3.0
+Icon = ExtResource("1_2w4yl")
 metadata/_custom_type_script = "uid://dld8qwimxwovx"

@@ -1,9 +1,11 @@
 [gd_resource type="Resource" script_class="DrinkRecipe" format=3 uid="uid://2dwj8bn6ncko"]
 
 [ext_resource type="Script" uid="uid://dld8qwimxwovx" path="res://game/orders/DrinkRecipe.cs" id="1_lkjiu"]
+[ext_resource type="Texture2D" uid="uid://dminbnn2crj64" path="res://assets/art/drinks/espresso.svg" id="1_ncss3"]
 
 [resource]
 script = ExtResource("1_lkjiu")
 DisplayName = "Espresso"
 BrewSeconds = 1.5
+Icon = ExtResource("1_ncss3")
 metadata/_custom_type_script = "uid://dld8qwimxwovx"
