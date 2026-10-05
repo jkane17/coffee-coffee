@@ -56,3 +56,10 @@ Godot concepts covered so far, so they don't get re-explained. Claude appends to
 - **Focus (GrabFocus)**: the focused Control receives keyboard input; a focused Button is pressed with Space/Enter, and that input never reaches `_UnhandledInput`. Used in: `DaySummary.cs`
 - **PanelContainer**: a container that draws a background panel behind its single child. Used in: `scenes/ui/hud.tscn`
 - **Anchors / layout presets**: pin a Control to a screen edge or centre so it stays put when the window resizes. Used in: `scenes/ui/hud.tscn`
+
+## Placeholder art (step 9)
+- **Importing assets**: files dropped into the project are imported automatically; SVGs become textures. Settings live in the Import dock and the `.import` file next to the asset. Used in: `assets/art/`
+- **Sprite2D**: draws a texture. `Centered` + `Offset` control where the origin sits (feet, for characters). Used in: `scenes/customer/customer.tscn`, `scenes/shop/shop.tscn`
+- **Change Type**: right-click a node → Change Type swaps its class but keeps its name, children and compatible properties. Used in: `customer.tscn`, `shop.tscn`
+- **TextureRect with Stretch Mode Tile**: repeats a texture to fill a Control's rect, good for floors and backgrounds. Used in: `shop.tscn`
+- **Draw order**: siblings later in the tree draw on top; runtime-added children go last, so customers draw over the scenery. Used in: `shop.tscn`

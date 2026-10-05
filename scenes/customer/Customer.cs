@@ -15,8 +15,11 @@ public partial class Customer : Node2D
     [Export] public float WalkSpeed { get; set; } = 120f;
     [Export] public Label OrderLabel { get; set; } = null!;
 
-    /// <summary>Tinted towards red as patience runs out.</summary>
-    [Export] public CanvasItem Body { get; set; } = null!;
+    /// <summary>The customer's sprite. Gets a random look on spawn and is tinted towards red as patience runs out.</summary>
+    [Export] public Sprite2D Body { get; set; } = null!;
+
+    /// <summary>Textures to pick from so customers don't all look the same.</summary>
+    [Export] public Godot.Collections.Array<Texture2D> Looks { get; set; } = new();
 
     [ExportGroup("Patience")]
     [Export(PropertyHint.Range, "1,120,1,suffix:s")] public float MinPatienceSeconds { get; set; } = 15f;
@@ -32,6 +35,11 @@ public partial class Customer : Node2D
 
     public override void _Ready()
     {
+        if (Looks.Count > 0)
+        {
+            Body.Texture = Looks[Random.Shared.Next(Looks.Count)];
+        }
+
         double patienceSeconds = Mathf.Lerp(MinPatienceSeconds, MaxPatienceSeconds, Random.Shared.NextSingle());
         _patience = new Patience(patienceSeconds);
         _patience.RanOut += OnPatienceRanOut;

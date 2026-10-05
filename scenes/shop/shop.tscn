@@ -6,6 +6,10 @@
 [ext_resource type="Resource" uid="uid://ctagyr1dx73qo" path="res://resources/drinks/cappuccino.tres" id="4_ge4d2"]
 [ext_resource type="Resource" uid="uid://2dwj8bn6ncko" path="res://resources/drinks/espresso.tres" id="5_xcdpw"]
 [ext_resource type="Resource" uid="uid://culsaao3corts" path="res://resources/drinks/latte.tres" id="6_tp26b"]
+[ext_resource type="Texture2D" uid="uid://ck47ys1lqrf05" path="res://assets/art/shop/floor_tile.svg" id="7_vk20h"]
+[ext_resource type="Texture2D" uid="uid://byc7s3fpxir3g" path="res://assets/art/shop/counter.svg" id="8_8qn5i"]
+[ext_resource type="Texture2D" uid="uid://cy3mr5j0xqhpp" path="res://assets/art/shop/coffee_machine.svg" id="9_dww4p"]
+[ext_resource type="Texture2D" uid="uid://c8caa41qua05f" path="res://assets/art/shop/door.svg" id="10_g6lcs"]
 
 [node name="Shop" type="Node2D" unique_id=1744938923 node_paths=PackedStringArray("Door", "Counter", "SpawnTimer")]
 script = ExtResource("1_100s2")
@@ -14,19 +18,24 @@ Door = NodePath("Door")
 Counter = NodePath("Counter")
 SpawnTimer = NodePath("SpawnTimer")
 Menu = Array[ExtResource("3_ptf86")]([ExtResource("4_ge4d2"), ExtResource("5_xcdpw"), ExtResource("6_tp26b")])
-DayLengthSeconds = 30.0
 
-[node name="Floor" type="ColorRect" parent="." unique_id=1628687921]
+[node name="Floor" type="TextureRect" parent="." unique_id=364596943]
 offset_right = 1152.0
 offset_bottom = 648.0
-color = Color(0.5862949, 0.29848194, 0, 1)
+texture = ExtResource("7_vk20h")
+stretch_mode = 1
 
-[node name="CounterTop" type="ColorRect" parent="." unique_id=1700421464]
-offset_left = 400.0
-offset_top = 200.0
-offset_right = 740.0
-offset_bottom = 240.0
-color = Color(0.3767199, 0.17505604, 7.219613e-08, 1)
+[node name="CounterTop" type="Sprite2D" parent="." unique_id=960711449]
+position = Vector2(575, 225)
+texture = ExtResource("8_8qn5i")
+
+[node name="CoffeeMachine" type="Sprite2D" parent="." unique_id=1188766127]
+position = Vector2(660, 180)
+texture = ExtResource("9_dww4p")
+
+[node name="DoorSprite" type="Sprite2D" parent="." unique_id=221276468]
+position = Vector2(100, 552)
+texture = ExtResource("10_g6lcs")
 
 [node name="Door" type="Marker2D" parent="." unique_id=642480764]
 position = Vector2(100, 600)

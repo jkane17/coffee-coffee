@@ -49,4 +49,5 @@ Claude runs in WSL. Godot and .NET are installed on Windows; call `dotnet.exe` (
 
 ## Git
 - Commit `.uid` files (e.g. `Customer.cs.uid`). Godot uses them to track references.
+- Commit `.import` files next to assets (e.g. `door.svg.import`). They hold import settings.
 - Never commit `.godot/`; it's a regenerated cache.

@@ -1,22 +1,25 @@
 [gd_scene format=3 uid="uid://tvjodhiqwomq"]
 
 [ext_resource type="Script" uid="uid://dmgr52phms70g" path="res://scenes/customer/Customer.cs" id="1_8noaa"]
+[ext_resource type="Texture2D" uid="uid://d2wlvfo07n20u" path="res://assets/art/customers/customer_1.svg" id="2_duem0"]
+[ext_resource type="Texture2D" uid="uid://ck7cdjrvvyibk" path="res://assets/art/customers/customer_2.svg" id="3_fd46v"]
+[ext_resource type="Texture2D" uid="uid://do4fmlnb2aee0" path="res://assets/art/customers/customer_3.svg" id="4_k1bqq"]
 
 [node name="Customer" type="Node2D" unique_id=783073232 node_paths=PackedStringArray("OrderLabel", "Body")]
 script = ExtResource("1_8noaa")
 OrderLabel = NodePath("OrderLabel")
 Body = NodePath("Body")
+Looks = Array[Texture2D]([ExtResource("2_duem0"), ExtResource("3_fd46v"), ExtResource("4_k1bqq")])
 
-[node name="Body" type="ColorRect" parent="." unique_id=2009281923]
-offset_left = -16.0
-offset_top = -48.0
-offset_right = 16.0
+[node name="Body" type="Sprite2D" parent="." unique_id=2038738664]
+texture = ExtResource("2_duem0")
+offset = Vector2(0, -28)
 
 [node name="OrderLabel" type="Label" parent="." unique_id=1407462483]
 visible = false
 offset_left = -50.0
-offset_top = -76.0
+offset_top = -82.0
 offset_right = 50.0
-offset_bottom = -53.0
+offset_bottom = -59.0
 text = "Latte"
 horizontal_alignment = 1
