@@ -102,3 +102,10 @@ Godot concepts covered so far, so they don't get re-explained. Claude appends to
 - **FileAccess**: Godot's file API; understands `user://` and `res://` and works on every platform. Used in: `SaveStore.cs`
 - **Versioned save data**: a version number in the file lets future code detect and handle older formats. Used in: `game/save/SaveData.cs`
 - **Changing scenes by hand**: `Instantiate` → configure → `Root.AddChild` → set `CurrentScene` → `QueueFree` the old scene. Unlike `ChangeSceneToPacked`, it lets you pass data in before the new scene's `_Ready`. Used in: `scenes/title/TitleScreen.cs`
+
+## Pause menu (step 15)
+- **Pausing**: `GetTree().Paused = true` stops processing and input for every node whose Process Mode is *Pausable* (the default via *Inherit*), including Timers and AnimationPlayers. Used in: `scenes/ui/PauseMenu.cs`
+- **Process Mode**: per node (*Inherit*, *Pausable*, *When Paused*, *Always*, *Disabled*); children inherit it. A pause menu needs *Always* to keep working. Used in: `scenes/ui/pause_menu.tscn`
+- **Pause outlives scenes**: `Paused` belongs to the SceneTree, so unpause before changing scene. Used in: `PauseMenu.cs`
+- **Loading scenes by path**: `ChangeSceneToFile` + a `PropertyHint.File` string export avoids circular PackedScene references between scenes. Used in: `PauseMenu.cs`
+- **CanvasLayer Layer**: higher layers draw on top of lower ones (pause menu above the HUD). Used in: `pause_menu.tscn`

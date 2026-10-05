@@ -1,0 +1,55 @@
+[gd_scene format=3 uid="uid://ganbuhamq3e8"]
+
+[ext_resource type="Script" uid="uid://r00j1mjs7i0m" path="res://scenes/ui/PauseMenu.cs" id="1_6tw0m"]
+
+[node name="PauseMenu" type="CanvasLayer" unique_id=1546091897 node_paths=PackedStringArray("ResumeButton", "QuitToTitleButton")]
+process_mode = 3
+layer = 10
+script = ExtResource("1_6tw0m")
+TitleScenePath = "uid://625eiwhcgswy"
+ResumeButton = NodePath("Center/Panel/Menu/ResumeButton")
+QuitToTitleButton = NodePath("Center/Panel/Menu/QuitToTitleButton")
+
+[node name="Dim" type="ColorRect" parent="." unique_id=1945374287]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.05882353)
+
+[node name="Center" type="CenterContainer" parent="." unique_id=1048564325]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="Center" unique_id=489670309]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+
+[node name="Menu" type="VBoxContainer" parent="Center/Panel" unique_id=958927028]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Center/Panel/Menu" unique_id=116349247]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Paused"
+horizontal_alignment = 1
+
+[node name="Hint" type="Label" parent="Center/Panel/Menu" unique_id=698549967]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+text = "Progress is saved at the end of each day."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="ResumeButton" type="Button" parent="Center/Panel/Menu" unique_id=705715086]
+layout_mode = 2
+text = "Resume"
+
+[node name="QuitToTitleButton" type="Button" parent="Center/Panel/Menu" unique_id=377857066]
+layout_mode = 2
+text = "Quit"
