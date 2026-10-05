@@ -1,0 +1,63 @@
+[gd_scene format=3 uid="uid://625eiwhcgswy"]
+
+[ext_resource type="Script" uid="uid://cawlsl17ndacx" path="res://scenes/title/TitleScreen.cs" id="1_qrms8"]
+[ext_resource type="PackedScene" uid="uid://b3b2paxha6mco" path="res://scenes/main/main.tscn" id="2_8xedo"]
+[ext_resource type="Texture2D" uid="uid://ck47ys1lqrf05" path="res://assets/art/shop/floor_tile.svg" id="3_84bpe"]
+[ext_resource type="Texture2D" uid="uid://clsj8rat7o2l1" path="res://assets/art/barista/barista.svg" id="4_iy4b5"]
+
+[node name="TitleScreen" type="Control" unique_id=69483207 node_paths=PackedStringArray("PlayButton", "QuitButton")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_qrms8")
+GameScene = ExtResource("2_8xedo")
+PlayButton = NodePath("Center/Menu/PlayButton")
+QuitButton = NodePath("Center/Menu/QuitButton")
+
+[node name="Background" type="TextureRect" parent="." unique_id=1293903561]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_84bpe")
+stretch_mode = 1
+
+[node name="Center" type="CenterContainer" parent="." unique_id=185185077]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Menu" type="VBoxContainer" parent="Center" unique_id=357771312]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="Center/Menu" unique_id=1159325549]
+layout_mode = 2
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 64
+text = "Coffee Coffee"
+horizontal_alignment = 1
+
+[node name="Barista" type="TextureRect" parent="Center/Menu" unique_id=26951195]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+texture = ExtResource("4_iy4b5")
+stretch_mode = 3
+
+[node name="PlayButton" type="Button" parent="Center/Menu" unique_id=458077920]
+custom_minimum_size = Vector2(200, 48)
+layout_mode = 2
+text = "Play"
+
+[node name="QuitButton" type="Button" parent="Center/Menu" unique_id=1145261406]
+custom_minimum_size = Vector2(200, 48)
+layout_mode = 2
+text = "Quit"

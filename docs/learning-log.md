@@ -90,3 +90,9 @@ Godot concepts covered so far, so they don't get re-explained. Claude appends to
 - **AnimationPlayer**: keyframes any property over time (here `Body:position` and `Body:rotation`). Track paths are relative to the AnimationPlayer's root (its parent by default). Used in: `customer.tscn`, `barista.tscn`
 - **Sharing animations as resources**: an AnimationPlayer holds libraries (`[Global]` is the unnamed default) of animations. Save a single animation to a `.tres` and *Load* it into other players to share it; loading a whole library adds it under a name, which prefixes its animations (`library/walk`). `RESET` is an editor helper storing resting values. Used in: `scenes/common/walk.tres`
 - **Looping and Stop()**: loop mode repeats an animation; `Stop()` returns to its first frame, so the resting pose belongs at time 0. Used in: `Walker.cs`
+
+## Title screen (step 13)
+- **SceneTree**: the running game's tree of nodes; `GetTree()` reaches it from any node. Used in: `scenes/title/TitleScreen.cs`
+- **Changing scenes**: `GetTree().ChangeSceneToPacked(scene)` frees the current scene and loads another; `GetTree().Quit()` closes the game. Used in: `TitleScreen.cs`
+- **Control-based scenes**: menus use a Control root with the *Full Rect* anchor preset so they fill the window at any size. Used in: `scenes/title/title_screen.tscn`
+- **CenterContainer**: keeps its child centred in its own rect. Used in: `title_screen.tscn`
