@@ -6,8 +6,9 @@ public partial class TitleScreen : Control
     /// <summary>The scene to switch to when starting the game (the Main scene).</summary>
     [Export] public PackedScene GameScene { get; set; } = null!;
     [Export] public Button ContinueButton { get; set; } = null!;
-    [Export] public Button PlayButton { get; set; } = null!;
+    [Export] public Button NewGameButton { get; set; } = null!;
     [Export] public Button QuitButton { get; set; } = null!;
+    [Export] public ConfirmationDialog NewGameConfirm { get; set; } = null!;
 
     private SaveData? _save;
 
@@ -22,11 +23,13 @@ public partial class TitleScreen : Control
         }
 
         ContinueButton.Pressed += OnContinuePressed;
-        PlayButton.Pressed += OnPlayPressed;
+        NewGameButton.Pressed += OnNewGamePressed;
         QuitButton.Pressed += OnQuitPressed;
+        NewGameConfirm.Confirmed += OnNewGameConfirmed;
+        NewGameConfirm.Canceled += OnNewGameCanceled;
 
         // Focus the most likely choice so Enter/Space works without the mouse.
-        (_save is not null ? ContinueButton : PlayButton).GrabFocus();
+        (_save is not null ? ContinueButton : NewGameButton).GrabFocus();
     }
 
     private void OnContinuePressed()
@@ -34,14 +37,31 @@ public partial class TitleScreen : Control
         StartGame(_save);
     }
 
-    private void OnPlayPressed()
+    private void OnNewGamePressed()
     {
-        StartGame(null);
+        if (_save is null)
+        {
+            StartGame(null);
+        }
+        else
+        {
+            NewGameConfirm.PopupCentered();
+        }
     }
 
     private void OnQuitPressed()
     {
         GetTree().Quit();
+    }
+
+    private void OnNewGameConfirmed()
+    {
+        StartGame(null);
+    }
+
+    private void OnNewGameCanceled()
+    {
+        ContinueButton.GrabFocus();
     }
 
     /// <summary>Swap this screen for the game scene by hand, rather than with ChangeSceneToPacked,

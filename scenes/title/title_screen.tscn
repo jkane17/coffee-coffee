@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://ck47ys1lqrf05" path="res://assets/art/shop/floor_tile.svg" id="3_84bpe"]
 [ext_resource type="Texture2D" uid="uid://clsj8rat7o2l1" path="res://assets/art/barista/barista.svg" id="4_iy4b5"]
 
-[node name="TitleScreen" type="Control" unique_id=69483207 node_paths=PackedStringArray("ContinueButton", "PlayButton", "QuitButton")]
+[node name="TitleScreen" type="Control" unique_id=69483207 node_paths=PackedStringArray("ContinueButton", "NewGameButton", "QuitButton", "NewGameConfirm")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -15,8 +15,9 @@ grow_vertical = 2
 script = ExtResource("1_qrms8")
 GameScene = ExtResource("2_8xedo")
 ContinueButton = NodePath("Center/Menu/ContinueButton")
-PlayButton = NodePath("Center/Menu/NewGameButton")
+NewGameButton = NodePath("Center/Menu/NewGameButton")
 QuitButton = NodePath("Center/Menu/QuitButton")
+NewGameConfirm = NodePath("NewGameConfirm")
 
 [node name="Background" type="TextureRect" parent="." unique_id=1293903561]
 layout_mode = 1
@@ -67,3 +68,11 @@ text = "New Game"
 custom_minimum_size = Vector2(200, 48)
 layout_mode = 2
 text = "Quit"
+
+[node name="NewGameConfirm" type="ConfirmationDialog" parent="." unique_id=632280814]
+oversampling_override = 1.0
+title = "Start a new game?"
+position = Vector2i(308, 274)
+size = Vector2i(536, 100)
+ok_button_text = "New Game"
+dialog_text = "Your saved progress will be replaced when you finish your first day."
