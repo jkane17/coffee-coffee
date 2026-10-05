@@ -84,3 +84,9 @@ Godot concepts covered so far, so they don't get re-explained. Claude appends to
 - **Cursor shapes**: `Input.SetDefaultCursorShape` switches the OS cursor, e.g. to a pointing hand. Used in: `Shop.cs`
 - **IsInstanceValid**: checks whether a stored node reference has been freed before touching it. Used in: `Shop.cs`
 - **Shader values flow into COLOR**: uniforms are read-only inputs, and a calculation only matters if it feeds the final `COLOR`. `TIME` gives seconds since start for animation. Shaders recompile on save; errors show in the shader editor and Output. Used in: `outline.gdshader`
+
+## Walk animation (step 12)
+- **Component nodes**: shared behaviour (walking) lives in its own node (`Walker`) added as a child, instead of being copied or inherited. Used in: `scenes/common/Walker.cs`, `customer.tscn`, `barista.tscn`
+- **AnimationPlayer**: keyframes any property over time (here `Body:position` and `Body:rotation`). Track paths are relative to the AnimationPlayer's root (its parent by default). Used in: `customer.tscn`, `barista.tscn`
+- **Sharing animations as resources**: an AnimationPlayer holds libraries (`[Global]` is the unnamed default) of animations. Save a single animation to a `.tres` and *Load* it into other players to share it; loading a whole library adds it under a name, which prefixes its animations (`library/walk`). `RESET` is an editor helper storing resting values. Used in: `scenes/common/walk.tres`
+- **Looping and Stop()**: loop mode repeats an animation; `Stop()` returns to its first frame, so the resting pose belongs at time 0. Used in: `Walker.cs`

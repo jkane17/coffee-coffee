@@ -12,7 +12,7 @@ public partial class Customer : Node2D
     /// <summary>Emitted when the customer runs out of patience before being served.</summary>
     [Signal] public delegate void GaveUpEventHandler();
 
-    [Export] public float WalkSpeed { get; set; } = 120f;
+    [Export] public Walker Walker { get; set; } = null!;
     [Export] public Label OrderLabel { get; set; } = null!;
     [Export] public TextureRect OrderIcon { get; set; } = null!;
     [Export] public Control OrderBubble { get; set; } = null!;
@@ -27,7 +27,6 @@ public partial class Customer : Node2D
     [Export(PropertyHint.Range, "1,120,1,suffix:s")] public float MinPatienceSeconds { get; set; } = 15f;
     [Export(PropertyHint.Range, "1,120,1,suffix:s")] public float MaxPatienceSeconds { get; set; } = 30f;
 
-    private Vector2? _target;
     private bool _isLeaving;
     private bool _isBeingServed;
     private Patience _patience = null!;
@@ -45,9 +44,10 @@ public partial class Customer : Node2D
         double patienceSeconds = Mathf.Lerp(MinPatienceSeconds, MaxPatienceSeconds, Random.Shared.NextSingle());
         _patience = new Patience(patienceSeconds);
         _patience.RanOut += OnPatienceRanOut;
+        Walker.Arrived += OnWalkerArrived;
     }
 
-    public void WalkTo(Vector2 globalTarget) => _target = globalTarget;
+    public void WalkTo(Vector2 globalTarget) => Walker.WalkTo(globalTarget);
 
     public void PlaceOrder(DrinkRecipe drink)
     {
@@ -79,26 +79,17 @@ public partial class Customer : Node2D
             _patience.Tick(delta);
             Body.Modulate = Colors.White.Lerp(ImpatientTint, 1f - (float)_patience.Fraction);
         }
+    }
 
-        if (_target is not Vector2 target)
+    private void OnWalkerArrived()
+    {
+        if (_isLeaving)
         {
+            QueueFree();
             return;
         }
 
-        GlobalPosition = GlobalPosition.MoveToward(target, WalkSpeed * (float)delta);
-
-        if (GlobalPosition == target)
-        {
-            _target = null;
-
-            if (_isLeaving)
-            {
-                QueueFree();
-                return;
-            }
-
-            EmitSignal(SignalName.Arrived);
-        }
+        EmitSignal(SignalName.Arrived);
     }
 
     private void OnPatienceRanOut()

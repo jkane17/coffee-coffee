@@ -2,9 +2,17 @@
 
 [ext_resource type="Script" uid="uid://cu0tclxhobwfo" path="res://scenes/barista/Barista.cs" id="1_4r1d1"]
 [ext_resource type="Texture2D" uid="uid://clsj8rat7o2l1" path="res://assets/art/barista/barista.svg" id="2_fpq83"]
+[ext_resource type="Script" uid="uid://ci27tfw8hd4xv" path="res://scenes/common/Walker.cs" id="3_x7y5m"]
+[ext_resource type="Animation" uid="uid://c0lmfxyov550j" path="res://scenes/common/walk.tres" id="4_hq0a2"]
 
-[node name="Barista" type="Node2D" unique_id=406427301 node_paths=PackedStringArray("HeldDrinkSprite")]
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_pvhni"]
+_data = {
+&"walk": ExtResource("4_hq0a2")
+}
+
+[node name="Barista" type="Node2D" unique_id=406427301 node_paths=PackedStringArray("Walker", "HeldDrinkSprite")]
 script = ExtResource("1_4r1d1")
+Walker = NodePath("Walker")
 HeldDrinkSprite = NodePath("HeldDrink")
 
 [node name="Body" type="Sprite2D" parent="." unique_id=1583426475]
@@ -14,3 +22,11 @@ offset = Vector2(0, -28)
 [node name="HeldDrink" type="Sprite2D" parent="." unique_id=283571589]
 visible = false
 position = Vector2(0, -72)
+
+[node name="Walker" type="Node" parent="." unique_id=1787367231 node_paths=PackedStringArray("AnimationPlayer")]
+script = ExtResource("3_x7y5m")
+Speed = 220.0
+AnimationPlayer = NodePath("../AnimationPlayer")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1975318995]
+libraries/ = SubResource("AnimationLibrary_pvhni")

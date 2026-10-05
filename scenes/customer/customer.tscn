@@ -7,6 +7,8 @@
 [ext_resource type="Shader" uid="uid://b8m1171aqstb" path="res://scenes/common/outline.gdshader" id="5_jy5aj"]
 [ext_resource type="Texture2D" uid="uid://c55mhv5qljxwg" path="res://assets/art/drinks/latte.svg" id="5_k1bqq"]
 [ext_resource type="Script" uid="uid://b37paq3exwaeg" path="res://scenes/common/Clickable.cs" id="6_6bdyt"]
+[ext_resource type="Script" uid="uid://ci27tfw8hd4xv" path="res://scenes/common/Walker.cs" id="8_lu5oa"]
+[ext_resource type="Animation" uid="uid://c0lmfxyov550j" path="res://scenes/common/walk.tres" id="9_1kb5n"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_jy5aj"]
 resource_local_to_scene = true
@@ -18,8 +20,42 @@ shader_parameter/width = 2.0
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wvx66"]
 size = Vector2(40, 56)
 
-[node name="Customer" type="Node2D" unique_id=783073232 node_paths=PackedStringArray("OrderLabel", "OrderIcon", "OrderBubble", "Body")]
+[sub_resource type="Animation" id="Animation_e0ilm"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Body:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Body:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_bd2f2"]
+_data = {
+&"RESET": SubResource("Animation_e0ilm"),
+&"walk": ExtResource("9_1kb5n")
+}
+
+[node name="Customer" type="Node2D" unique_id=783073232 node_paths=PackedStringArray("Walker", "OrderLabel", "OrderIcon", "OrderBubble", "Body")]
 script = ExtResource("1_8noaa")
+Walker = NodePath("Walker")
 OrderLabel = NodePath("Order/OrderLabel")
 OrderIcon = NodePath("Order/OrderIcon")
 OrderBubble = NodePath("Order")
@@ -56,3 +92,10 @@ OutlineTarget = NodePath("../Body")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ClickArea" unique_id=955197746]
 position = Vector2(0, -28)
 shape = SubResource("RectangleShape2D_wvx66")
+
+[node name="Walker" type="Node" parent="." unique_id=1193825300 node_paths=PackedStringArray("AnimationPlayer")]
+script = ExtResource("8_lu5oa")
+AnimationPlayer = NodePath("../AnimationPlayer")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1834218239]
+libraries/ = SubResource("AnimationLibrary_bd2f2")
