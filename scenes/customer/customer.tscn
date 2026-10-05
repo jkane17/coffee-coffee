@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://tvjodhiqwomq"]
+
+[ext_resource type="Script" uid="uid://dmgr52phms70g" path="res://scenes/customer/Customer.cs" id="1_8noaa"]
+
+[node name="Customer" type="Node2D" unique_id=783073232]
+script = ExtResource("1_8noaa")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=2009281923]
+offset_left = -16.0
+offset_top = -48.0
+offset_right = 16.0

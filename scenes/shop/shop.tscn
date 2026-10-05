@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://bj2hefwjgn15e"]
+
+[ext_resource type="Script" uid="uid://dli3ban7y2dnw" path="res://scenes/shop/Shop.cs" id="1_100s2"]
+[ext_resource type="PackedScene" uid="uid://tvjodhiqwomq" path="res://scenes/customer/customer.tscn" id="2_qaxay"]
+
+[node name="Shop" type="Node2D" unique_id=1744938923 node_paths=PackedStringArray("Door", "Counter")]
+script = ExtResource("1_100s2")
+CustomerScene = ExtResource("2_qaxay")
+Door = NodePath("Door")
+Counter = NodePath("Counter")
+
+[node name="Floor" type="ColorRect" parent="." unique_id=1628687921]
+offset_right = 1152.0
+offset_bottom = 648.0
+color = Color(0.5862949, 0.29848194, 0, 1)
+
+[node name="CounterTop" type="ColorRect" parent="." unique_id=1700421464]
+offset_left = 400.0
+offset_top = 200.0
+offset_right = 740.0
+offset_bottom = 240.0
+color = Color(0.3767199, 0.17505604, 7.219613e-08, 1)
+
+[node name="Door" type="Marker2D" parent="." unique_id=642480764]
+position = Vector2(100, 600)
+
+[node name="Counter" type="Marker2D" parent="." unique_id=2053379798]
+position = Vector2(575, 290)
