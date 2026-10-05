@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet.exe build:*)",
+      "Bash(dotnet.exe --version)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)"
+    ],
+    "deny": [
+      "Edit(.godot/**)",
+      "Write(.godot/**)"
+    ]
+  }
+}
