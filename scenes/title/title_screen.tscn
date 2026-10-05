@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://ck47ys1lqrf05" path="res://assets/art/shop/floor_tile.svg" id="3_84bpe"]
 [ext_resource type="Texture2D" uid="uid://clsj8rat7o2l1" path="res://assets/art/barista/barista.svg" id="4_iy4b5"]
 
-[node name="TitleScreen" type="Control" unique_id=69483207 node_paths=PackedStringArray("PlayButton", "QuitButton")]
+[node name="TitleScreen" type="Control" unique_id=69483207 node_paths=PackedStringArray("ContinueButton", "PlayButton", "QuitButton")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -14,7 +14,8 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_qrms8")
 GameScene = ExtResource("2_8xedo")
-PlayButton = NodePath("Center/Menu/PlayButton")
+ContinueButton = NodePath("Center/Menu/ContinueButton")
+PlayButton = NodePath("Center/Menu/NewGameButton")
 QuitButton = NodePath("Center/Menu/QuitButton")
 
 [node name="Background" type="TextureRect" parent="." unique_id=1293903561]
@@ -52,10 +53,15 @@ layout_mode = 2
 texture = ExtResource("4_iy4b5")
 stretch_mode = 3
 
-[node name="PlayButton" type="Button" parent="Center/Menu" unique_id=458077920]
+[node name="ContinueButton" type="Button" parent="Center/Menu" unique_id=1680317464]
 custom_minimum_size = Vector2(200, 48)
 layout_mode = 2
-text = "Play"
+text = "Continue"
+
+[node name="NewGameButton" type="Button" parent="Center/Menu" unique_id=458077920]
+custom_minimum_size = Vector2(200, 48)
+layout_mode = 2
+text = "New Game"
 
 [node name="QuitButton" type="Button" parent="Center/Menu" unique_id=1145261406]
 custom_minimum_size = Vector2(200, 48)

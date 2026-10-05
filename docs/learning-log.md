@@ -96,3 +96,9 @@ Godot concepts covered so far, so they don't get re-explained. Claude appends to
 - **Changing scenes**: `GetTree().ChangeSceneToPacked(scene)` frees the current scene and loads another; `GetTree().Quit()` closes the game. Used in: `TitleScreen.cs`
 - **Control-based scenes**: menus use a Control root with the *Full Rect* anchor preset so they fill the window at any size. Used in: `scenes/title/title_screen.tscn`
 - **CenterContainer**: keeps its child centred in its own rect. Used in: `title_screen.tscn`
+
+## Save and load (step 14)
+- **user:// paths**: a per-user writable data folder (on Windows under `%APPDATA%\Godot\app_userdata\<project>`). Open it with *Project → Open User Data Folder*. `res://` is read-only in exported games. Used in: `game/save/SaveStore.cs`
+- **FileAccess**: Godot's file API; understands `user://` and `res://` and works on every platform. Used in: `SaveStore.cs`
+- **Versioned save data**: a version number in the file lets future code detect and handle older formats. Used in: `game/save/SaveData.cs`
+- **Changing scenes by hand**: `Instantiate` → configure → `Root.AddChild` → set `CurrentScene` → `QueueFree` the old scene. Unlike `ChangeSceneToPacked`, it lets you pass data in before the new scene's `_Ready`. Used in: `scenes/title/TitleScreen.cs`

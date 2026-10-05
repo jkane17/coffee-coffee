@@ -33,17 +33,21 @@ public partial class Shop : Node2D
 
     private readonly List<Customer> _queue = new();
     private DayStats _today = new(0);
+    private int _daysCompleted;
     private bool _isDayRunning;
     private Clickable? _highlighted;
 
-    /// <summary>The shop's money. Exposed so UI can observe it.</summary>
-    public Till Till { get; } = new();
+    /// <summary>The shop's money. Exposed so UI can observe it. Replaced by <see cref="RestoreProgress"/>.</summary>
+    public Till Till { get; private set; } = new();
 
     /// <summary>Brews the front customer's order. Exposed so UI can observe it.</summary>
     public Brewer Brewer { get; } = new();
 
     /// <summary>Opening hours for the current day. Created in _Ready from the Day exports.</summary>
     public DayClock Clock { get; private set; } = null!;
+
+    /// <summary>How many full days the shop has finished, including any from a loaded save.</summary>
+    public int DaysCompleted => _daysCompleted;
 
     /// <summary>Raised once the shop has closed and the last customer has left the line.</summary>
     public event Action<DayStats>? DayEnded;
@@ -77,6 +81,18 @@ public partial class Shop : Node2D
         }
     }
 
+    /// <summary>Continue from saved progress. Must be called before the first day starts and before anything observes <see cref="Till"/>.</summary>
+    public void RestoreProgress(SaveData save)
+    {
+        if (_isDayRunning || _daysCompleted > 0)
+        {
+            throw new InvalidOperationException("Progress can only be restored before the first day starts.");
+        }
+
+        Till = new Till(save.Money);
+        _daysCompleted = save.DaysCompleted;
+    }
+
     /// <summary>Open the shop for a new day.</summary>
     public void StartDay()
     {
@@ -87,7 +103,7 @@ public partial class Shop : Node2D
         }
 
         _isDayRunning = true;
-        _today = new DayStats(_today.DayNumber + 1);
+        _today = new DayStats(_daysCompleted + 1);
         Clock.Open();
         SpawnTimer.Start();
         SpawnCustomer();
@@ -236,6 +252,7 @@ public partial class Shop : Node2D
         if (_isDayRunning && !Clock.IsOpen && _queue.Count == 0)
         {
             _isDayRunning = false;
+            _daysCompleted = _today.DayNumber;
             DayEnded?.Invoke(_today);
         }
     }

@@ -1,33 +1,62 @@
 using Godot;
 
-/// <summary>The first screen: starts the game or quits.</summary>
+/// <summary>The first screen: continues a saved game, starts a new one, or quits.</summary>
 public partial class TitleScreen : Control
 {
-    /// <summary>The scene to switch to when Play is pressed (the Main scene).</summary>
+    /// <summary>The scene to switch to when starting the game (the Main scene).</summary>
     [Export] public PackedScene GameScene { get; set; } = null!;
+    [Export] public Button ContinueButton { get; set; } = null!;
     [Export] public Button PlayButton { get; set; } = null!;
     [Export] public Button QuitButton { get; set; } = null!;
 
+    private SaveData? _save;
+
     public override void _Ready()
     {
+        _save = new SaveStore().Load();
+
+        ContinueButton.Visible = _save is not null;
+        if (_save is not null)
+        {
+            ContinueButton.Text = $"Continue (Day {_save.DaysCompleted + 1})";
+        }
+
+        ContinueButton.Pressed += OnContinuePressed;
         PlayButton.Pressed += OnPlayPressed;
         QuitButton.Pressed += OnQuitPressed;
 
-        // Focus Play so Enter/Space starts the game without touching the mouse.
-        PlayButton.GrabFocus();
+        // Focus the most likely choice so Enter/Space works without the mouse.
+        (_save is not null ? ContinueButton : PlayButton).GrabFocus();
+    }
+
+    private void OnContinuePressed()
+    {
+        StartGame(_save);
     }
 
     private void OnPlayPressed()
     {
-        Error error = GetTree().ChangeSceneToPacked(GameScene);
-        if (error != Error.Ok)
-        {
-            GD.PushError($"Couldn't start the game scene: {error}");
-        }
+        StartGame(null);
     }
 
     private void OnQuitPressed()
     {
         GetTree().Quit();
+    }
+
+    /// <summary>Swap this screen for the game scene by hand, rather than with ChangeSceneToPacked,
+    /// so the save can be handed to Main before its _Ready runs.</summary>
+    private void StartGame(SaveData? save)
+    {
+        Main main = GameScene.Instantiate<Main>();
+        if (save is not null)
+        {
+            main.ContinueFrom(save);
+        }
+
+        SceneTree tree = GetTree();
+        tree.Root.AddChild(main);
+        tree.CurrentScene = main;
+        QueueFree();
     }
 }
