@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="DrinkRecipe" format=3 uid="uid://2dwj8bn6ncko"]
+
+[ext_resource type="Script" uid="uid://dld8qwimxwovx" path="res://game/orders/DrinkRecipe.cs" id="1_lkjiu"]
+
+[resource]
+script = ExtResource("1_lkjiu")
+DisplayName = "Espresso"
+metadata/_custom_type_script = "uid://dld8qwimxwovx"

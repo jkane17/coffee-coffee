@@ -2,6 +2,10 @@
 
 [ext_resource type="Script" uid="uid://dli3ban7y2dnw" path="res://scenes/shop/Shop.cs" id="1_100s2"]
 [ext_resource type="PackedScene" uid="uid://tvjodhiqwomq" path="res://scenes/customer/customer.tscn" id="2_qaxay"]
+[ext_resource type="Script" uid="uid://dld8qwimxwovx" path="res://game/orders/DrinkRecipe.cs" id="3_ptf86"]
+[ext_resource type="Resource" uid="uid://ctagyr1dx73qo" path="res://resources/drinks/cappuccino.tres" id="4_ge4d2"]
+[ext_resource type="Resource" uid="uid://2dwj8bn6ncko" path="res://resources/drinks/espresso.tres" id="5_xcdpw"]
+[ext_resource type="Resource" uid="uid://culsaao3corts" path="res://resources/drinks/latte.tres" id="6_tp26b"]
 
 [node name="Shop" type="Node2D" unique_id=1744938923 node_paths=PackedStringArray("Door", "Counter", "SpawnTimer")]
 script = ExtResource("1_100s2")
@@ -9,6 +13,7 @@ CustomerScene = ExtResource("2_qaxay")
 Door = NodePath("Door")
 Counter = NodePath("Counter")
 SpawnTimer = NodePath("SpawnTimer")
+Menu = Array[ExtResource("3_ptf86")]([ExtResource("4_ge4d2"), ExtResource("5_xcdpw"), ExtResource("6_tp26b")])
 
 [node name="Floor" type="ColorRect" parent="." unique_id=1628687921]
 offset_right = 1152.0

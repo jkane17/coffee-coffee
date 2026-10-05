@@ -1,7 +1,8 @@
+using System;
 using System.Collections.Generic;
 using Godot;
 
-/// <summary>The shop floor: spawns customers at the door on a timer, lines them up at the counter, and serves them.</summary>
+/// <summary>The shop floor: spawns customers on a timer, lines them up, takes their orders and serves them.</summary>
 public partial class Shop : Node2D
 {
     private static readonly StringName ServeAction = "serve";
@@ -10,16 +11,23 @@ public partial class Shop : Node2D
     [Export] public Marker2D Door { get; set; } = null!;
     [Export] public Marker2D Counter { get; set; } = null!;
     [Export] public Timer SpawnTimer { get; set; } = null!;
+    [Export] public Godot.Collections.Array<DrinkRecipe> Menu { get; set; } = new();
 
     [ExportGroup("Queue")]
     [Export(PropertyHint.Range, "1,20,1")] public int MaxQueueLength { get; set; } = 5;
     [Export] public float QueueSpacing { get; set; } = 60f;
 
     private readonly List<Customer> _queue = new();
-    private int _servedCount;
+    private readonly Till _till = new();
 
     public override void _Ready()
     {
+        if (Menu.Count == 0)
+        {
+            GD.PushError("The shop's Menu is empty. Add DrinkRecipe resources to it in the Inspector.");
+        }
+
+        _till.BalanceChanged += OnBalanceChanged;
         SpawnTimer.Timeout += OnSpawnTimerTimeout;
         SpawnCustomer();
     }
@@ -45,14 +53,25 @@ public partial class Shop : Node2D
         Customer customer = CustomerScene.Instantiate<Customer>();
         AddChild(customer);
         customer.GlobalPosition = Door.GlobalPosition;
+        customer.Arrived += () => OnCustomerArrived(customer);
         customer.WalkTo(GetQueueSlotPosition(_queue.Count));
         _queue.Add(customer);
     }
 
-    /// <summary>Serve the customer at the front of the line, if they've reached the counter.</summary>
+    /// <summary>A customer who reaches the front of the line places their order.</summary>
+    private void OnCustomerArrived(Customer customer)
+    {
+        bool isAtFront = _queue.Count > 0 && _queue[0] == customer;
+        if (isAtFront && customer.Order is null && Menu.Count > 0)
+        {
+            customer.PlaceOrder(Menu[Random.Shared.Next(Menu.Count)]);
+        }
+    }
+
+    /// <summary>Serve the customer at the front of the line, once they've ordered.</summary>
     private void ServeNextCustomer()
     {
-        if (_queue.Count == 0 || _queue[0].IsWalking)
+        if (_queue.Count == 0 || _queue[0].Order is not DrinkRecipe order)
         {
             return;
         }
@@ -60,10 +79,15 @@ public partial class Shop : Node2D
         Customer served = _queue[0];
         _queue.RemoveAt(0);
         served.LeaveThrough(Door.GlobalPosition);
-        _servedCount++;
-        GD.Print($"Served customer #{_servedCount} ({_queue.Count} still waiting).");
+        _till.AddSale(order.Price);
+        GD.Print($"Served a {order.DisplayName} for {order.Price} coins.");
 
         MoveQueueForward();
+    }
+
+    private void OnBalanceChanged(int balance)
+    {
+        GD.Print($"Till: {balance} coins.");
     }
 
     private void MoveQueueForward()

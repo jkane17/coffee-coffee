@@ -22,3 +22,9 @@ Godot concepts covered so far, so they don't get re-explained. Claude appends to
 - **Input Map**: named actions (e.g. `serve`) bound to keys in Project Settings, so code never hard-codes keys. Used in: `project.godot`, `Shop.cs`
 - **_UnhandledInput**: receives input events that UI controls didn't consume; check them with `IsActionPressed`. Used in: `Shop.cs`
 - **QueueFree**: safely deletes a node (and its children) at the end of the current frame. Used in: `Customer.cs`
+
+## Drink orders (step 4)
+- **Custom Resources + [GlobalClass]**: a `Resource` subclass holds data; `[GlobalClass]` lets you create it as a `.tres` file from the FileSystem dock and edit it in the Inspector. Used in: `game/orders/DrinkRecipe.cs`, `resources/drinks/`
+- **Exporting a typed array**: `Godot.Collections.Array<DrinkRecipe>` shows as an editable list in the Inspector. Used in: `Shop.cs`
+- **Label**: a Control that shows text; Controls can be children of Node2D scenes. Used in: `scenes/customer/customer.tscn`
+- **Plain C# systems**: gameplay logic with no Godot types (e.g. `Till`) uses C# `event`s instead of `[Signal]`. Used in: `game/economy/Till.cs`
