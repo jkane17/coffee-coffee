@@ -5,6 +5,7 @@
 [ext_resource type="Script" uid="uid://dld8qwimxwovx" path="res://game/orders/DrinkRecipe.cs" id="3_ptf86"]
 [ext_resource type="Resource" uid="uid://dt7t8eyqsgieb" path="res://resources/drinks/instant_coffee.tres" id="4_dww4p"]
 [ext_resource type="Texture2D" uid="uid://bg2bcup3mcsqy" path="res://assets/art/drinks/cup_empty.svg" id="5_f8gqx"]
+[ext_resource type="Texture2D" uid="uid://kddysqxcnjq0" path="res://assets/art/decor/closed_sign.svg" id="6_cxrsv"]
 [ext_resource type="Texture2D" uid="uid://b1ywjm721nqbf" path="res://assets/art/drinks/cup_granules.svg" id="6_wjgtv"]
 [ext_resource type="Texture2D" uid="uid://jas46mhw2w8a" path="res://assets/art/shop/service_counter.svg" id="7_5y7fm"]
 [ext_resource type="Texture2D" uid="uid://ck47ys1lqrf05" path="res://assets/art/shop/floor_tile.svg" id="7_vk20h"]
@@ -105,7 +106,7 @@ shader_parameter/width = 2.0
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_a1v00"]
 size = Vector2(72, 64)
 
-[node name="Shop" type="Node2D" unique_id=1744938923 node_paths=PackedStringArray("Door", "SpawnTimer", "Barista", "ServeSpot", "WorkArea", "KettleArea", "SinkArea", "CupStackArea", "GranulesArea", "BoxesArea", "PackedStations", "KettleOnBase", "QueueStart")]
+[node name="Shop" type="Node2D" unique_id=1744938923 node_paths=PackedStringArray("Door", "SpawnTimer", "Barista", "ServeSpot", "WorkArea", "KettleArea", "SinkArea", "CupStackArea", "GranulesArea", "BoxesArea", "PackedStations", "KettleOnBase", "ShopSign", "QueueStart")]
 script = ExtResource("1_100s2")
 CustomerScene = ExtResource("2_qaxay")
 Door = NodePath("Door")
@@ -122,6 +123,9 @@ BoxesArea = NodePath("Decor/Boxes/ClickArea")
 PackedStations = [NodePath("KettleBase"), NodePath("CoffeeJar"), NodePath("CupStack")]
 KettleOnBase = NodePath("KettleBase/Kettle")
 InstantCoffee = ExtResource("4_dww4p")
+ShopSign = NodePath("Decor/ShopSign")
+OpenSignTexture = ExtResource("18_f8gqx")
+ClosedSignTexture = ExtResource("6_cxrsv")
 EmptyCupTexture = ExtResource("5_f8gqx")
 GranulesCupTexture = ExtResource("6_wjgtv")
 QueueStart = NodePath("QueueStart")
@@ -250,7 +254,7 @@ shape = SubResource("RectangleShape2D_a1v00")
 position = Vector2(702, 172)
 texture = ExtResource("17_noimi")
 
-[node name="OpenSign" type="Sprite2D" parent="Decor" unique_id=1577757508]
+[node name="ShopSign" type="Sprite2D" parent="Decor" unique_id=1577757508]
 position = Vector2(622, 100)
 texture = ExtResource("18_f8gqx")
 

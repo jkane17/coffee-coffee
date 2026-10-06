@@ -5,9 +5,9 @@
 [ext_resource type="PackedScene" uid="uid://din7ukq7ti18x" path="res://scenes/ui/hud.tscn" id="3_6q06x"]
 [ext_resource type="PackedScene" uid="uid://ganbuhamq3e8" path="res://scenes/ui/pause_menu.tscn" id="4_l3cfh"]
 [ext_resource type="Script" uid="uid://mq013t5ehpt5" path="res://scenes/intro/Intro.cs" id="5_b1x3f"]
-[ext_resource type="Resource" path="res://resources/dialogue/intro_welcome.tres" id="6_a8run"]
-[ext_resource type="Resource" path="res://resources/dialogue/intro_request.tres" id="7_ouso4"]
-[ext_resource type="Resource" path="res://resources/dialogue/intro_verdict.tres" id="8_blune"]
+[ext_resource type="Resource" uid="uid://bp0gmbdytafmo" path="res://resources/dialogue/intro_welcome.tres" id="6_a8run"]
+[ext_resource type="Resource" uid="uid://6tqfd0q0j74q" path="res://resources/dialogue/intro_request.tres" id="7_ouso4"]
+[ext_resource type="Resource" uid="uid://dfdgwb6276aib" path="res://resources/dialogue/intro_verdict.tres" id="8_blune"]
 [ext_resource type="Texture2D" uid="uid://84x3v8wuc2mi" path="res://assets/art/customers/aunt_bea.svg" id="9_th5th"]
 
 [node name="Main" type="Node" unique_id=1090373094 node_paths=PackedStringArray("Shop", "Hud", "Intro")]

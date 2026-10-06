@@ -37,6 +37,12 @@ public partial class Shop : Node2D
     [Export(PropertyHint.Range, "0.5,30,0.5,suffix:s")] public float KettleFillSeconds { get; set; } = 3f;
     [Export(PropertyHint.Range, "0.5,60,0.5,suffix:s")] public float KettleBoilSeconds { get; set; } = 6f;
 
+    [ExportGroup("Shop sign")]
+    /// <summary>Hidden until the first day starts; shows the open or closed texture to match the clock.</summary>
+    [Export] public Sprite2D ShopSign { get; set; } = null!;
+    [Export] public Texture2D OpenSignTexture { get; set; } = null!;
+    [Export] public Texture2D ClosedSignTexture { get; set; } = null!;
+
     [ExportGroup("Held item art")]
     [Export] public Texture2D EmptyCupTexture { get; set; } = null!;
     [Export] public Texture2D GranulesCupTexture { get; set; } = null!;
@@ -111,6 +117,7 @@ public partial class Shop : Node2D
         _stations[GranulesArea] = new StationActions(() => !_isPacked && CoffeeBar.CanUseGranules, CoffeeBar.UseGranules);
         _stations[BoxesArea] = new StationActions(() => _isPacked, Unpack);
         UpdateHeldItem();
+        UpdateShopSign();
     }
 
     public override void _Process(double delta)
@@ -139,6 +146,7 @@ public partial class Shop : Node2D
 
         Till = new Till(save.Money);
         _daysCompleted = save.DaysCompleted;
+        UpdateShopSign();
     }
 
     /// <summary>Hide the <see cref="PackedStations"/> in the boxes until the barista unpacks them. Used by the new-game intro.</summary>
@@ -189,6 +197,7 @@ public partial class Shop : Node2D
         _today = new DayStats(NextDayNumber);
         Clock.Open();
         SpawnTimer.Start();
+        UpdateShopSign();
         SpawnCustomer();
         GD.Print($"Day {_today.DayNumber}: the shop is open.");
     }
@@ -239,6 +248,13 @@ public partial class Shop : Node2D
     {
         Rect2 workArea = WorkArea.GetGlobalRect();
         return globalPoint.Clamp(workArea.Position, workArea.End);
+    }
+
+    /// <summary>No sign until the shop has opened for the first time (the intro); after that, OPEN or CLOSED to match the clock.</summary>
+    private void UpdateShopSign()
+    {
+        ShopSign.Visible = _isDayRunning || _daysCompleted > 0;
+        ShopSign.Texture = Clock.IsOpen ? OpenSignTexture : ClosedSignTexture;
     }
 
     /// <summary>Show what the barista is carrying, and whether the kettle is on its base.</summary>
@@ -393,6 +409,7 @@ public partial class Shop : Node2D
     private void OnClosingTime()
     {
         SpawnTimer.Stop();
+        UpdateShopSign();
         GD.Print("Closing time. Serving the last customers in line.");
         EndDayIfFinished();
     }
