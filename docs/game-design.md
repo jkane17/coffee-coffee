@@ -3,6 +3,14 @@
 ## Story
 The player inherits a small, empty store. All that was left behind is a kettle, a jar of instant coffee, a stack of take-away cups and a small counter. They open a tiny coffee stand with what they have, and grow it into a proper coffee shop with the money they earn.
 
+## Intro (new game only)
+1. Aunt Bea walks in and welcomes the player to the shop they've inherited. The community group used it for meetings, and there may be coffee things in the boxes.
+2. The player clicks the boxes and the kettle, coffee jar and cups pop out onto the brew counter.
+3. Aunt Bea asks for a coffee. Making it is the tutorial: a hint at the top of the screen always shows the next step, and she has unlimited patience. It's on the house.
+4. She says it's not half bad and suggests turning the place into a coffee shop. The player agrees, she leaves, and Day 1 begins.
+
+Continuing a save skips the intro. The dialogue lives in `resources/dialogue/`.
+
 ## Core loop (per day)
 1. Customers come in through the door in the back wall and take a free spot along the service counter while the shop is open.
 2. Each customer thinks for a moment, then shows a "ready" bubble.

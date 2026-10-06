@@ -25,6 +25,10 @@ public partial class Shop : Node2D
     [Export] public Area2D SinkArea { get; set; } = null!;
     [Export] public Area2D CupStackArea { get; set; } = null!;
     [Export] public Area2D GranulesArea { get; set; } = null!;
+    /// <summary>The boxes the coffee things are packed in on a new game. Clicking them unpacks the <see cref="PackedStations"/>.</summary>
+    [Export] public Area2D BoxesArea { get; set; } = null!;
+    /// <summary>Stations that <see cref="PackAwayStations"/> hides in the boxes until the barista unpacks them.</summary>
+    [Export] public Godot.Collections.Array<Node2D> PackedStations { get; set; } = new();
     /// <summary>The kettle sprite on its base. Hidden while the barista carries it, and its texture is reused for the carried kettle.</summary>
     [Export] public Sprite2D KettleOnBase { get; set; } = null!;
     /// <summary>The drink made by pouring hot water onto granules.</summary>
@@ -57,6 +61,7 @@ public partial class Shop : Node2D
     private int _daysCompleted;
     private bool _isDayRunning;
     private Clickable? _highlighted;
+    private bool _isPacked;
 
     /// <summary>The shop's money. Exposed so UI can observe it. Replaced by <see cref="RestoreProgress"/>.</summary>
     public Till Till { get; private set; } = new();
@@ -70,8 +75,20 @@ public partial class Shop : Node2D
     /// <summary>How many full days the shop has finished, including any from a loaded save.</summary>
     public int DaysCompleted => _daysCompleted;
 
+    /// <summary>The number the next call to <see cref="StartDay"/> will give the day.</summary>
+    public int NextDayNumber => _daysCompleted + 1;
+
+    /// <summary>Where customers come in and leave.</summary>
+    public Vector2 ExitPosition => Door.GlobalPosition;
+
     /// <summary>Raised once the shop has closed and the last customer has left the line.</summary>
     public event Action<DayStats>? DayEnded;
+
+    /// <summary>Raised when the barista unpacks the boxes.</summary>
+    public event Action? StationsUnpacked;
+
+    /// <summary>Raised when a customer is handed their drink.</summary>
+    public event Action<Customer>? CustomerServed;
 
     public override void _Ready()
     {
@@ -87,10 +104,12 @@ public partial class Shop : Node2D
 
         CoffeeBar = new CoffeeBar(new Kettle(KettleCapacityCups, KettleFillSeconds, KettleBoilSeconds), InstantCoffee);
         CoffeeBar.Changed += UpdateHeldItem;
-        _stations[KettleArea] = new StationActions(() => CoffeeBar.CanUseKettle, CoffeeBar.UseKettle);
-        _stations[SinkArea] = new StationActions(() => CoffeeBar.CanUseSink, CoffeeBar.UseSink);
-        _stations[CupStackArea] = new StationActions(() => CoffeeBar.CanUseCupStack, CoffeeBar.UseCupStack);
-        _stations[GranulesArea] = new StationActions(() => CoffeeBar.CanUseGranules, CoffeeBar.UseGranules);
+        // Nothing on the brew counter can be used while the coffee things are still in the boxes.
+        _stations[KettleArea] = new StationActions(() => !_isPacked && CoffeeBar.CanUseKettle, CoffeeBar.UseKettle);
+        _stations[SinkArea] = new StationActions(() => !_isPacked && CoffeeBar.CanUseSink, CoffeeBar.UseSink);
+        _stations[CupStackArea] = new StationActions(() => !_isPacked && CoffeeBar.CanUseCupStack, CoffeeBar.UseCupStack);
+        _stations[GranulesArea] = new StationActions(() => !_isPacked && CoffeeBar.CanUseGranules, CoffeeBar.UseGranules);
+        _stations[BoxesArea] = new StationActions(() => _isPacked, Unpack);
         UpdateHeldItem();
     }
 
@@ -122,6 +141,41 @@ public partial class Shop : Node2D
         _daysCompleted = save.DaysCompleted;
     }
 
+    /// <summary>Hide the <see cref="PackedStations"/> in the boxes until the barista unpacks them. Used by the new-game intro.</summary>
+    public void PackAwayStations()
+    {
+        _isPacked = true;
+        foreach (Node2D station in PackedStations)
+        {
+            station.Visible = false;
+        }
+    }
+
+    /// <summary>Bring in one customer, e.g. outside opening hours. <paramref name="setUp"/> runs before they enter the scene tree.
+    /// Returns null if every spot at the counter is taken.</summary>
+    public Customer? AdmitCustomer(Action<Customer>? setUp = null, bool thinksOnArrival = true)
+    {
+        int spot = Array.IndexOf(_spots, null);
+        if (spot < 0)
+        {
+            return null;
+        }
+
+        Customer customer = CustomerScene.Instantiate<Customer>();
+        setUp?.Invoke(customer);
+        AddChild(customer);
+        customer.GlobalPosition = Door.GlobalPosition;
+        if (thinksOnArrival)
+        {
+            customer.Arrived += customer.StartThinking;
+        }
+
+        customer.GaveUp += () => OnCustomerGaveUp(customer);
+        customer.WalkTo(GetSpotPosition(spot));
+        _spots[spot] = customer;
+        return customer;
+    }
+
     /// <summary>Open the shop for a new day.</summary>
     public void StartDay()
     {
@@ -132,7 +186,7 @@ public partial class Shop : Node2D
         }
 
         _isDayRunning = true;
-        _today = new DayStats(_daysCompleted + 1);
+        _today = new DayStats(NextDayNumber);
         Clock.Open();
         SpawnTimer.Start();
         SpawnCustomer();
@@ -209,7 +263,8 @@ public partial class Shop : Node2D
     /// Checked every frame, because what's usable changes even when the mouse doesn't move (e.g. the kettle boiling).</summary>
     private void UpdateHighlight()
     {
-        Clickable? hovered = FindAreaAt(GetGlobalMousePosition()) as Clickable;
+        // Nothing in the shop counts as hovered while the mouse is over UI that blocks clicks, like the dialogue box.
+        Clickable? hovered = GetViewport().GuiGetHoveredControl() is null ? FindAreaAt(GetGlobalMousePosition()) as Clickable : null;
         Clickable? usable = hovered is not null && CanUse(hovered) ? hovered : null;
 
         if (usable == _highlighted)
@@ -316,10 +371,21 @@ public partial class Shop : Node2D
 
         DrinkRecipe drink = CoffeeBar.HandOverDrink();
         FreeSpotOf(customer);
-        customer.LeaveThrough(Door.GlobalPosition);
-        Till.AddSale(drink.Price);
-        _today.RecordSale(drink.Price);
-        GD.Print($"Served a {drink.DisplayName} for $ {drink.Price}.");
+        customer.ReceiveDrink();
+        if (!customer.StaysAfterServed)
+        {
+            customer.LeaveThrough(Door.GlobalPosition);
+        }
+
+        // Outside opening hours (the intro), drinks are on the house.
+        if (_isDayRunning)
+        {
+            Till.AddSale(drink.Price);
+            _today.RecordSale(drink.Price);
+            GD.Print($"Served a {drink.DisplayName} for $ {drink.Price}.");
+        }
+
+        CustomerServed?.Invoke(customer);
 
         EndDayIfFinished();
     }
@@ -350,20 +416,29 @@ public partial class Shop : Node2D
     /// <summary>Send a new customer in to the first free spot at the counter. Does nothing if every spot is taken.</summary>
     private void SpawnCustomer()
     {
-        int spot = Array.IndexOf(_spots, null);
-        if (spot < 0)
+        AdmitCustomer();
+    }
+
+    /// <summary>Take the coffee things out of the boxes, popping each station into place one after another.</summary>
+    private void Unpack()
+    {
+        _isPacked = false;
+
+        // A parallel tween runs all its steps at once; the growing delays stagger them.
+        Tween tween = CreateTween().SetParallel();
+        for (int i = 0; i < PackedStations.Count; i++)
         {
-            return;
+            Node2D station = PackedStations[i];
+            Vector2 fullScale = station.Scale;
+            station.Scale = Vector2.Zero;
+            station.Visible = true;
+            tween.TweenProperty(station, Node2D.PropertyName.Scale.ToString(), fullScale, 0.35)
+                .SetDelay(i * 0.15)
+                .SetTrans(Tween.TransitionType.Back)
+                .SetEase(Tween.EaseType.Out);
         }
 
-        Customer customer = CustomerScene.Instantiate<Customer>();
-        AddChild(customer);
-        customer.GlobalPosition = Door.GlobalPosition;
-        // Everyone starts deciding what to order as soon as they reach their spot.
-        customer.Arrived += customer.StartThinking;
-        customer.GaveUp += () => OnCustomerGaveUp(customer);
-        customer.WalkTo(GetSpotPosition(spot));
-        _spots[spot] = customer;
+        StationsUnpacked?.Invoke();
     }
 
     /// <summary>An impatient customer leaves without paying, freeing their spot.</summary>

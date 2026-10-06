@@ -127,3 +127,12 @@ Godot concepts covered so far, so they don't get re-explained. Claude appends to
 - **Use Parent Material**: a CanvasItem setting that draws the node with its parent's material, so one ShaderMaterial (the hover outline) covers a parent and its children. Used in: `scenes/shop/shop.tscn` (kettle on its base)
 - **Area2D as a station**: a station is just a sprite with a `Clickable` child; the Shop maps each click area to what it does, and uses the area's position to work out where the barista should stand. Used in: `scenes/shop/Shop.cs`
 - **Visible doesn't disable physics**: hiding a node stops it drawing, but its Area2D still answers point queries. That's why the click area sits on the kettle *base*, which stays clickable while the kettle is carried. Used in: `shop.tscn`
+
+## New game intro (step 20)
+- **Tweens**: `CreateTween().TweenProperty(node, property, finalValue, seconds)` animates any property from code; `SetTrans`/`SetEase` shape the motion (Back + Out overshoots for a "pop"), `SetParallel` runs steps together and `SetDelay` staggers them. A tween belongs to the node that made it and pauses with it. Used in: `Shop.cs` (unpacking), `DialogueBox.cs`
+- **Typewriter text**: tween a Label's `VisibleRatio` from 0 to 1. Used in: `scenes/ui/DialogueBox.cs`
+- **_GuiInput and AcceptEvent**: a Control gets mouse events over itself in `_GuiInput`; `AcceptEvent()` marks them handled. A full-screen Control with mouse filter *Stop* blocks clicks to everything below. Used in: `DialogueBox.cs`
+- **Resources inside resources**: an exported array of a custom Resource is saved in one `.tres` as `sub_resource` entries, so a whole conversation is one file. Used in: `game/dialogue/`, `resources/dialogue/`
+- **GuiGetHoveredControl**: `GetViewport().GuiGetHoveredControl()` says which Control is under the mouse, so world hover effects can stand down behind UI. Used in: `Shop.cs`
+- **Tween sequences**: steps run one after another by default; `TweenInterval` waits and `TweenCallback(Callable.From(...))` runs code at the end. Fading `Modulate` to transparent fades a node and its children. Used in: `scenes/ui/Hud.cs` (day banner)
+- **TreeExited**: every Node raises it when leaving the scene tree, including when it frees itself, so another node can wait for it to be gone. Unsubscribe in `_ExitTree` in case both are freed together. Used in: `scenes/intro/Intro.cs`

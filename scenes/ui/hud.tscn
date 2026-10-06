@@ -3,13 +3,18 @@
 [ext_resource type="Script" uid="uid://dno1pxkjopaih" path="res://scenes/ui/Hud.cs" id="1_0mwgc"]
 [ext_resource type="Script" uid="uid://dklmml7gd3g74" path="res://scenes/ui/BrewStatus.cs" id="2_hqnrr"]
 [ext_resource type="Script" uid="uid://c5sv48geypkog" path="res://scenes/ui/DaySummary.cs" id="3_bo48s"]
+[ext_resource type="PackedScene" uid="uid://p0wln6j8tdwd" path="res://scenes/ui/dialogue_box.tscn" id="4_8qguk"]
 
-[node name="Hud" type="CanvasLayer" unique_id=1516447156 node_paths=PackedStringArray("MoneyLabel", "ClockLabel", "BrewStatus", "DaySummary")]
+[node name="Hud" type="CanvasLayer" unique_id=1516447156 node_paths=PackedStringArray("MoneyLabel", "ClockLabel", "BrewStatus", "DaySummary", "DialogueBox", "HintPanel", "HintLabel", "DayBanner")]
 script = ExtResource("1_0mwgc")
 MoneyLabel = NodePath("MoneyLabel")
 ClockLabel = NodePath("ClockLabel")
 BrewStatus = NodePath("BrewStatus")
 DaySummary = NodePath("DaySummary")
+DialogueBox = NodePath("DialogueBox")
+HintPanel = NodePath("HintPanel")
+HintLabel = NodePath("HintPanel/HintLabel")
+DayBanner = NodePath("DayBanner")
 
 [node name="MoneyLabel" type="Label" parent="." unique_id=1799306082]
 offset_left = 16.0
@@ -88,3 +93,38 @@ text = "Customers served: 0"
 [node name="NextDayButton" type="Button" parent="DaySummary/Content" unique_id=900312782]
 layout_mode = 2
 text = "Next day"
+
+[node name="DialogueBox" parent="." unique_id=89056549 instance=ExtResource("4_8qguk")]
+
+[node name="HintPanel" type="PanelContainer" parent="." unique_id=1505328020]
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_top = 16.0
+offset_right = 20.0
+offset_bottom = 40.0
+grow_horizontal = 2
+mouse_filter = 2
+
+[node name="HintLabel" type="Label" parent="HintPanel" unique_id=1876781075]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+
+[node name="DayBanner" type="Label" parent="." unique_id=1336892578]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -11.5
+offset_right = 20.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 64
+horizontal_alignment = 1
+vertical_alignment = 1

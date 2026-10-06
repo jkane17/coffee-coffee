@@ -44,6 +44,12 @@ public partial class Customer : Node2D
 
     public CustomerState State { get; private set; } = CustomerState.Queueing;
 
+    /// <summary>Never gives up waiting (e.g. the relative in the intro).</summary>
+    public bool HasUnlimitedPatience { get; set; }
+
+    /// <summary>Stays at the counter after being served, until told to <see cref="LeaveThrough"/>.</summary>
+    public bool StaysAfterServed { get; set; }
+
     /// <summary>The drink this customer wants, or null if their order hasn't been taken yet.</summary>
     public DrinkRecipe? Order { get; private set; }
 
@@ -96,6 +102,14 @@ public partial class Customer : Node2D
         _patience.Restore(OrderTakenPatienceBoost);
     }
 
+    /// <summary>They have their drink: hide the order and stop losing patience.</summary>
+    public void ReceiveDrink()
+    {
+        State = CustomerState.Served;
+        OrderBubble.Visible = false;
+        Body.Modulate = Colors.White;
+    }
+
     /// <summary>Walk to the exit, then remove this customer from the scene.</summary>
     public void LeaveThrough(Vector2 globalExit)
     {
@@ -120,8 +134,7 @@ public partial class Customer : Node2D
                 }
                 break;
 
-            case CustomerState.ReadyToOrder:
-            case CustomerState.Ordered:
+            case CustomerState.ReadyToOrder or CustomerState.Ordered when !HasUnlimitedPatience:
                 _patience.Tick(delta);
                 Body.Modulate = Colors.White.Lerp(ImpatientTint, 1f - (float)_patience.Fraction);
                 break;

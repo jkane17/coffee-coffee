@@ -53,7 +53,59 @@ shader_parameter/enabled = false
 shader_parameter/outline_color = Color(1, 0.92, 0.55, 1)
 shader_parameter/width = 2.0
 
-[node name="Shop" type="Node2D" unique_id=1744938923 node_paths=PackedStringArray("Door", "SpawnTimer", "Barista", "ServeSpot", "WorkArea", "KettleArea", "SinkArea", "CupStackArea", "GranulesArea", "KettleOnBase", "QueueStart")]
+[sub_resource type="Shader" id="Shader_f8gqx"]
+code = "shader_type canvas_item;
+
+// Draws an outline around a sprite's visible pixels while `enabled` is true.
+// The texture needs a few pixels of transparent margin for the outline to fit in.
+
+uniform bool enabled = false;
+uniform vec4 outline_color : source_color = vec4(1.0, 0.92, 0.55, 1.0);
+uniform float width : hint_range(0.0, 8.0) = 2.0;
+
+// The vertex colour carries the node's tint (e.g. the patience Modulate), so keep it to apply at the end.
+varying vec4 tint;
+
+void vertex() {
+    tint = COLOR;
+}
+
+void fragment() {
+    vec4 base = texture(TEXTURE, UV);
+    vec4 result = base;
+
+    if (enabled && base.a < 1.0) {
+        // Is any pixel `width` away in one of 8 directions visible? Then this pixel is on the outline.
+        vec2 offset = TEXTURE_PIXEL_SIZE * width;
+        float neighbours = 0.0;
+        neighbours += texture(TEXTURE, UV + vec2(offset.x, 0.0)).a;
+        neighbours += texture(TEXTURE, UV - vec2(offset.x, 0.0)).a;
+        neighbours += texture(TEXTURE, UV + vec2(0.0, offset.y)).a;
+        neighbours += texture(TEXTURE, UV - vec2(0.0, offset.y)).a;
+        neighbours += texture(TEXTURE, UV + offset).a;
+        neighbours += texture(TEXTURE, UV - offset).a;
+        neighbours += texture(TEXTURE, UV + vec2(offset.x, -offset.y)).a;
+        neighbours += texture(TEXTURE, UV + vec2(-offset.x, offset.y)).a;
+
+        float pulse = 0.75 + 0.25 * sin(TIME * 4.0);
+        vec4 outline = vec4(outline_color.rgb, clamp(neighbours, 0.0, 1.0) * outline_color.a * pulse);
+        result = mix(outline, base, base.a);
+    }
+
+    COLOR = result * tint;
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ncc2j"]
+shader = SubResource("Shader_f8gqx")
+shader_parameter/enabled = false
+shader_parameter/outline_color = Color(1, 0.92, 0.55, 1)
+shader_parameter/width = 2.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_a1v00"]
+size = Vector2(72, 64)
+
+[node name="Shop" type="Node2D" unique_id=1744938923 node_paths=PackedStringArray("Door", "SpawnTimer", "Barista", "ServeSpot", "WorkArea", "KettleArea", "SinkArea", "CupStackArea", "GranulesArea", "BoxesArea", "PackedStations", "KettleOnBase", "QueueStart")]
 script = ExtResource("1_100s2")
 CustomerScene = ExtResource("2_qaxay")
 Door = NodePath("Door")
@@ -66,6 +118,8 @@ KettleArea = NodePath("KettleBase/ClickArea")
 SinkArea = NodePath("Sink/ClickArea")
 CupStackArea = NodePath("CupStack/ClickArea")
 GranulesArea = NodePath("CoffeeJar/ClickArea")
+BoxesArea = NodePath("Decor/Boxes/ClickArea")
+PackedStations = [NodePath("KettleBase"), NodePath("CoffeeJar"), NodePath("CupStack")]
 KettleOnBase = NodePath("KettleBase/Kettle")
 InstantCoffee = ExtResource("4_dww4p")
 EmptyCupTexture = ExtResource("5_f8gqx")
@@ -181,8 +235,16 @@ position = Vector2(512, 151)
 texture = ExtResource("15_u2jek")
 
 [node name="Boxes" type="Sprite2D" parent="Decor" unique_id=442579252]
+material = SubResource("ShaderMaterial_ncc2j")
 position = Vector2(449, 217)
 texture = ExtResource("16_bnu54")
+
+[node name="ClickArea" type="Area2D" parent="Decor/Boxes" unique_id=1987565107 node_paths=PackedStringArray("OutlineTarget")]
+script = ExtResource("12_xoc10")
+OutlineTarget = NodePath("..")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Decor/Boxes/ClickArea" unique_id=1400505467]
+shape = SubResource("RectangleShape2D_a1v00")
 
 [node name="Doormat" type="Sprite2D" parent="Decor" unique_id=1625494717]
 position = Vector2(702, 172)

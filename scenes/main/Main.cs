@@ -6,6 +6,8 @@ public partial class Main : Node
 {
     [Export] public Shop Shop { get; set; } = null!;
     [Export] public Hud Hud { get; set; } = null!;
+    /// <summary>Plays on a new game, before Day 1.</summary>
+    [Export] public Intro Intro { get; set; } = null!;
 
     private readonly SaveStore _saveStore = new();
     private SaveData? _saveToContinue;
@@ -29,9 +31,23 @@ public partial class Main : Node
         Hud.ShowClock(Shop.Clock);
 
         Shop.DayEnded += OnDayEnded;
-        Hud.NextDayRequested += Shop.StartDay;
+        Hud.NextDayRequested += BeginDay;
 
-        Shop.StartDay();
+        if (_saveToContinue is null)
+        {
+            Intro.Finished += BeginDay;
+            Intro.Play(Shop, Hud);
+        }
+        else
+        {
+            BeginDay();
+        }
+    }
+
+    /// <summary>Announce the next day with a banner, then open the shop once it's gone.</summary>
+    private void BeginDay()
+    {
+        Hud.ShowDayBanner(Shop.NextDayNumber, Shop.StartDay);
     }
 
     private void OnDayEnded(DayStats stats)

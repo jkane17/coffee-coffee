@@ -1,0 +1,49 @@
+[gd_scene format=3 uid="uid://p0wln6j8tdwd"]
+
+[ext_resource type="Script" uid="uid://du7b3al8jbmm" path="res://scenes/ui/DialogueBox.cs" id="1_xg44k"]
+
+[node name="DialogueBox" type="Control" unique_id=89056549 node_paths=PackedStringArray("SpeakerLabel", "TextLabel")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_xg44k")
+SpeakerLabel = NodePath("Panel/Content/SpeakerLabel")
+TextLabel = NodePath("Panel/Content/TextLabel")
+
+[node name="Panel" type="PanelContainer" parent="." unique_id=95076562]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -164.0
+offset_right = -24.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 0
+offset_transform_enabled = true
+mouse_filter = 2
+
+[node name="Content" type="VBoxContainer" parent="Panel" unique_id=1635416746]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="SpeakerLabel" type="Label" parent="Panel/Content" unique_id=589573718]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+
+[node name="TextLabel" type="Label" parent="Panel/Content" unique_id=1529216019]
+custom_minimum_size = Vector2(200, 60)
+layout_mode = 2
+size_flags_vertical = 6
+autowrap_mode = 3
+
+[node name="ContinueLabel" type="Label" parent="Panel/Content" unique_id=1199646284]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Click to continue ▸"
+horizontal_alignment = 2

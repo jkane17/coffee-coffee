@@ -1,0 +1,38 @@
+[gd_resource type="Resource" script_class="Dialogue" format=3 uid="uid://bp0gmbdytafmo"]
+
+[ext_resource type="Script" uid="uid://c2hnhqqdbogmb" path="res://game/dialogue/Dialogue.cs" id="1_dialogue"]
+[ext_resource type="Script" uid="uid://erexaarg3o7m" path="res://game/dialogue/DialogueLine.cs" id="2_line"]
+
+[sub_resource type="Resource" id="Resource_line1"]
+script = ExtResource("2_line")
+Speaker = "Aunt Bea"
+Text = "So this is it! The shop's all yours now. Left to you in the will, fair and square."
+
+[sub_resource type="Resource" id="Resource_line2"]
+script = ExtResource("2_line")
+Speaker = "You"
+Text = "It's... smaller than I imagined. And dustier."
+
+[sub_resource type="Resource" id="Resource_line3"]
+script = ExtResource("2_line")
+Speaker = "Aunt Bea"
+Text = "Ha! It's got character. Any idea what you'll do with the place?"
+
+[sub_resource type="Resource" id="Resource_line4"]
+script = ExtResource("2_line")
+Speaker = "You"
+Text = "Not a clue."
+
+[sub_resource type="Resource" id="Resource_line5"]
+script = ExtResource("2_line")
+Speaker = "Aunt Bea"
+Text = "Well, the community group was using it for their meetings until recently."
+
+[sub_resource type="Resource" id="Resource_line6"]
+script = ExtResource("2_line")
+Speaker = "Aunt Bea"
+Text = "They always had a brew on the go. I bet there's some coffee things in one of those boxes."
+
+[resource]
+script = ExtResource("1_dialogue")
+Lines = Array[ExtResource("2_line")]([SubResource("Resource_line1"), SubResource("Resource_line2"), SubResource("Resource_line3"), SubResource("Resource_line4"), SubResource("Resource_line5"), SubResource("Resource_line6")])

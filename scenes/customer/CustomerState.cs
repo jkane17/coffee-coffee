@@ -13,6 +13,9 @@ public enum CustomerState
     /// <summary>Order taken, waiting for the drink. Patience keeps running until they're served.</summary>
     Ordered,
 
+    /// <summary>Has their drink.</summary>
+    Served,
+
     /// <summary>Walking out, served or not.</summary>
     Leaving,
 }

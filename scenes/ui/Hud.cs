@@ -10,6 +10,16 @@ public partial class Hud : CanvasLayer
     [Export] public Label ClockLabel { get; set; } = null!;
     [Export] public BrewStatus BrewStatus { get; set; } = null!;
     [Export] public DaySummary DaySummary { get; set; } = null!;
+    [Export] public DialogueBox DialogueBox { get; set; } = null!;
+    /// <summary>Shown with <see cref="ShowHint"/>; hidden when there's no hint.</summary>
+    [Export] public Control HintPanel { get; set; } = null!;
+    [Export] public Label HintLabel { get; set; } = null!;
+
+    [ExportGroup("Day banner")]
+    /// <summary>Big "Day N" text shown at the start of each day.</summary>
+    [Export] public Label DayBanner { get; set; } = null!;
+    [Export(PropertyHint.Range, "0.5,10,0.5,suffix:s")] public float DayBannerSeconds { get; set; } = 2f;
+    [Export(PropertyHint.Range, "0,3,0.1,suffix:s")] public float DayBannerFadeSeconds { get; set; } = 0.5f;
 
     private Till? _till;
     private DayClock? _clock;
@@ -20,6 +30,35 @@ public partial class Hud : CanvasLayer
     public override void _Ready()
     {
         DaySummary.NextDayPressed += OnNextDayPressed;
+        ShowHint(null);
+        DayBanner.Visible = false;
+    }
+
+    /// <summary>Fade in "Day N", hold it, fade it out, then call <paramref name="onFinished"/>.</summary>
+    public void ShowDayBanner(int dayNumber, Action onFinished)
+    {
+        string modulate = CanvasItem.PropertyName.Modulate.ToString();
+        DayBanner.Text = $"Day {dayNumber}";
+        DayBanner.Modulate = Colors.Transparent;
+        DayBanner.Visible = true;
+
+        // Tween steps run one after another by default; TweenInterval just waits.
+        Tween tween = CreateTween();
+        tween.TweenProperty(DayBanner, modulate, Colors.White, DayBannerFadeSeconds);
+        tween.TweenInterval(DayBannerSeconds);
+        tween.TweenProperty(DayBanner, modulate, Colors.Transparent, DayBannerFadeSeconds);
+        tween.TweenCallback(Callable.From(() =>
+        {
+            DayBanner.Visible = false;
+            onFinished();
+        }));
+    }
+
+    /// <summary>Show a hint at the top of the screen, or hide it with null.</summary>
+    public void ShowHint(string? hint)
+    {
+        HintPanel.Visible = hint is not null;
+        HintLabel.Text = hint ?? "";
     }
 
     public void ShowKettle(Kettle kettle) => BrewStatus.ShowKettle(kettle);
