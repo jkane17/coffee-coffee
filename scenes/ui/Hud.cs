@@ -22,7 +22,7 @@ public partial class Hud : CanvasLayer
         DaySummary.NextDayPressed += OnNextDayPressed;
     }
 
-    public void ShowBrewer(Brewer brewer) => BrewStatus.ShowBrewer(brewer);
+    public void ShowKettle(Kettle kettle) => BrewStatus.ShowKettle(kettle);
 
     public void ShowDaySummary(DayStats stats) => DaySummary.ShowSummary(stats);
 

@@ -22,17 +22,17 @@ theme_override_constants/outline_size = 6
 theme_override_font_sizes/font_size = 32
 text = "$ 0"
 
-[node name="BrewStatus" type="VBoxContainer" parent="." unique_id=189333286 node_paths=PackedStringArray("DrinkLabel", "BrewBar")]
+[node name="BrewStatus" type="VBoxContainer" parent="." unique_id=189333286 node_paths=PackedStringArray("StatusLabel", "BrewBar")]
 offset_left = 16.0
 offset_top = 64.0
 offset_right = 276.0
 offset_bottom = 64.0
 mouse_filter = 2
 script = ExtResource("2_hqnrr")
-DrinkLabel = NodePath("DrinkLabel")
+StatusLabel = NodePath("StatusLabel")
 BrewBar = NodePath("BrewBar")
 
-[node name="DrinkLabel" type="Label" parent="BrewStatus" unique_id=741292846]
+[node name="StatusLabel" type="Label" parent="BrewStatus" unique_id=741292846]
 layout_mode = 2
 text = "Brewing Latte..."
 

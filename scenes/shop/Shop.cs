@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Godot;
 
 /// <summary>The shop floor: runs the working day, spawns customers while open, gives each a spot at the service counter,
-/// and turns the player's clicks into barista actions (taking orders, brewing and serving).</summary>
+/// and turns the player's clicks into barista actions (taking orders, using the brew counter's stations, and serving).</summary>
 public partial class Shop : Node2D
 {
     [Export] public PackedScene CustomerScene { get; set; } = null!;
@@ -13,13 +13,29 @@ public partial class Shop : Node2D
 
     [ExportGroup("Barista")]
     [Export] public Barista Barista { get; set; } = null!;
-    [Export] public Area2D BrewStationArea { get; set; } = null!;
-    /// <summary>Where the barista stands to use the brew station.</summary>
-    [Export] public Marker2D BrewSpot { get; set; } = null!;
+    /// <summary>How far to the right of a brew counter station the barista stands to use it.</summary>
+    [Export] public float StationReach { get; set; } = 48f;
     /// <summary>Where the barista stands to serve the customer at the first counter spot. Later spots are spaced like the customers' spots.</summary>
     [Export] public Marker2D ServeSpot { get; set; } = null!;
     /// <summary>The area behind the service counter the barista can walk in. Floor clicks outside it are clamped into it.</summary>
     [Export] public Control WorkArea { get; set; } = null!;
+
+    [ExportGroup("Brew counter")]
+    [Export] public Area2D KettleArea { get; set; } = null!;
+    [Export] public Area2D SinkArea { get; set; } = null!;
+    [Export] public Area2D CupStackArea { get; set; } = null!;
+    [Export] public Area2D GranulesArea { get; set; } = null!;
+    /// <summary>The kettle sprite on its base. Hidden while the barista carries it, and its texture is reused for the carried kettle.</summary>
+    [Export] public Sprite2D KettleOnBase { get; set; } = null!;
+    /// <summary>The drink made by pouring hot water onto granules.</summary>
+    [Export] public DrinkRecipe InstantCoffee { get; set; } = null!;
+    [Export(PropertyHint.Range, "1,10,1")] public int KettleCapacityCups { get; set; } = 1;
+    [Export(PropertyHint.Range, "0.5,30,0.5,suffix:s")] public float KettleFillSeconds { get; set; } = 3f;
+    [Export(PropertyHint.Range, "0.5,60,0.5,suffix:s")] public float KettleBoilSeconds { get; set; } = 6f;
+
+    [ExportGroup("Held item art")]
+    [Export] public Texture2D EmptyCupTexture { get; set; } = null!;
+    [Export] public Texture2D GranulesCupTexture { get; set; } = null!;
 
     [ExportGroup("Queue")]
     /// <summary>Where the first customer stands, near the bottom of the service counter. Later spots run up the counter from here.</summary>
@@ -35,11 +51,8 @@ public partial class Shop : Node2D
     /// <summary>Who is standing at each spot along the service counter. Customers keep their spot until they leave.</summary>
     private Customer?[] _spots = Array.Empty<Customer?>();
 
-    /// <summary>Taken orders that haven't been brewed yet, oldest first.</summary>
-    private readonly List<Customer> _orderTickets = new();
-
-    /// <summary>Who the drink being brewed or carried is for.</summary>
-    private Customer? _drinkFor;
+    /// <summary>What each brew counter station does when clicked, keyed by its click area. Built in _Ready.</summary>
+    private readonly Dictionary<Area2D, StationActions> _stations = new();
     private DayStats _today = new(0);
     private int _daysCompleted;
     private bool _isDayRunning;
@@ -48,8 +61,8 @@ public partial class Shop : Node2D
     /// <summary>The shop's money. Exposed so UI can observe it. Replaced by <see cref="RestoreProgress"/>.</summary>
     public Till Till { get; private set; } = new();
 
-    /// <summary>Brews the front customer's order. Exposed so UI can observe it.</summary>
-    public Brewer Brewer { get; } = new();
+    /// <summary>The coffee-making stations and what the barista is carrying. Created in _Ready; exposed so UI can observe the kettle.</summary>
+    public CoffeeBar CoffeeBar { get; private set; } = null!;
 
     /// <summary>Opening hours for the current day. Created in _Ready from the Day exports.</summary>
     public DayClock Clock { get; private set; } = null!;
@@ -71,13 +84,20 @@ public partial class Shop : Node2D
         Clock = new DayClock(DayLengthSeconds, OpenHour, CloseHour);
         Clock.Closed += OnClosingTime;
         SpawnTimer.Timeout += OnSpawnTimerTimeout;
-        Brewer.BrewFinished += OnBrewFinished;
+
+        CoffeeBar = new CoffeeBar(new Kettle(KettleCapacityCups, KettleFillSeconds, KettleBoilSeconds), InstantCoffee);
+        CoffeeBar.Changed += UpdateHeldItem;
+        _stations[KettleArea] = new StationActions(() => CoffeeBar.CanUseKettle, CoffeeBar.UseKettle);
+        _stations[SinkArea] = new StationActions(() => CoffeeBar.CanUseSink, CoffeeBar.UseSink);
+        _stations[CupStackArea] = new StationActions(() => CoffeeBar.CanUseCupStack, CoffeeBar.UseCupStack);
+        _stations[GranulesArea] = new StationActions(() => CoffeeBar.CanUseGranules, CoffeeBar.UseGranules);
+        UpdateHeldItem();
     }
 
     public override void _Process(double delta)
     {
         Clock.Tick(delta);
-        Brewer.Tick(delta);
+        CoffeeBar.Tick(delta);
         UpdateHighlight();
     }
 
@@ -119,20 +139,27 @@ public partial class Shop : Node2D
         GD.Print($"Day {_today.DayNumber}: the shop is open.");
     }
 
-    /// <summary>Send the barista to whatever was clicked: the brew station, a customer (to take their order or serve them), or a spot on the floor.</summary>
+    /// <summary>Send the barista to whatever was clicked: a brew counter station, a customer (to take their order or serve them), or a spot on the floor.</summary>
     private void OnClick(Vector2 globalPoint)
     {
-        // The barista stays at the brew station until the drink is ready.
-        if (Brewer.IsBusy)
+        // The barista stays at the sink until the kettle is full.
+        if (CoffeeBar.IsBusy)
         {
             return;
         }
 
         Area2D? clicked = FindAreaAt(globalPoint);
 
-        if (clicked == BrewStationArea)
+        if (clicked is not null && _stations.TryGetValue(clicked, out StationActions station))
         {
-            Barista.WalkTo(BrewSpot.GlobalPosition, UseBrewStation);
+            // Checked again on arrival, because things may have changed on the way (e.g. the kettle finished boiling).
+            Barista.WalkTo(GetStandPosition(clicked), () =>
+            {
+                if (station.CanUse())
+                {
+                    station.Use();
+                }
+            });
         }
         else if (clicked?.GetParent() is Customer customer)
         {
@@ -144,13 +171,42 @@ public partial class Shop : Node2D
         }
         else
         {
-            Rect2 workArea = WorkArea.GetGlobalRect();
-            Barista.WalkTo(globalPoint.Clamp(workArea.Position, workArea.End));
+            Barista.WalkTo(ClampToWorkArea(globalPoint));
         }
     }
 
+    /// <summary>Where the barista stands to use a station: just to its right, inside the work area.</summary>
+    private Vector2 GetStandPosition(Area2D station)
+    {
+        return ClampToWorkArea(station.GlobalPosition + Vector2.Right * StationReach);
+    }
+
+    private Vector2 ClampToWorkArea(Vector2 globalPoint)
+    {
+        Rect2 workArea = WorkArea.GetGlobalRect();
+        return globalPoint.Clamp(workArea.Position, workArea.End);
+    }
+
+    /// <summary>Show what the barista is carrying, and whether the kettle is on its base.</summary>
+    private void UpdateHeldItem()
+    {
+        KettleOnBase.Visible = !CoffeeBar.IsHoldingKettle;
+
+        Texture2D? held = null;
+        if (CoffeeBar.IsHoldingKettle)
+        {
+            held = KettleOnBase.Texture;
+        }
+        else if (CoffeeBar.HeldCup is Cup cup)
+        {
+            held = cup.Drink?.Icon ?? (cup.HasGranules ? GranulesCupTexture : EmptyCupTexture);
+        }
+
+        Barista.Hold(held);
+    }
+
     /// <summary>Outline whatever is under the mouse if clicking it would do something right now, and show a hand cursor.
-    /// Checked every frame, because what's usable changes even when the mouse doesn't move (e.g. a brew finishing).</summary>
+    /// Checked every frame, because what's usable changes even when the mouse doesn't move (e.g. the kettle boiling).</summary>
     private void UpdateHighlight()
     {
         Clickable? hovered = FindAreaAt(GetGlobalMousePosition()) as Clickable;
@@ -174,18 +230,17 @@ public partial class Shop : Node2D
 
     private bool CanUse(Area2D area)
     {
-        if (area == BrewStationArea)
+        if (CoffeeBar.IsBusy)
         {
-            return CanUseBrewStation();
+            return false;
+        }
+
+        if (_stations.TryGetValue(area, out StationActions station))
+        {
+            return station.CanUse();
         }
 
         return area.GetParent() is Customer customer && (CanTakeOrder(customer) || CanServe(customer));
-    }
-
-    /// <summary>The brew station is usable when it's free, the barista's hands are empty, and there's an order waiting to be made.</summary>
-    private bool CanUseBrewStation()
-    {
-        return !Brewer.IsBusy && Barista.HeldDrink is null && _orderTickets.Count > 0;
     }
 
     /// <summary>An order can be taken from any customer at the counter once they've decided what they want.</summary>
@@ -194,10 +249,10 @@ public partial class Shop : Node2D
         return customer.State == CustomerState.ReadyToOrder;
     }
 
-    /// <summary>A customer can be served when the barista is carrying the drink that was made for them.</summary>
+    /// <summary>A customer can be served when the barista is carrying the drink they ordered.</summary>
     private bool CanServe(Customer customer)
     {
-        return Barista.HeldDrink is not null && customer == _drinkFor;
+        return customer.State == CustomerState.Ordered && CoffeeBar.HeldDrink is not null && CoffeeBar.HeldDrink == customer.Order;
     }
 
     /// <summary>Ask the physics engine which Area2D, if any, is under a point.</summary>
@@ -219,26 +274,6 @@ public partial class Shop : Node2D
         }
 
         return null;
-    }
-
-    /// <summary>Brew the oldest order that's still waiting, if the barista's hands are free.</summary>
-    private void UseBrewStation()
-    {
-        if (!CanUseBrewStation())
-        {
-            return;
-        }
-
-        Customer customer = _orderTickets[0];
-        _orderTickets.RemoveAt(0);
-        _drinkFor = customer;
-        customer.StartBeingServed();
-        Brewer.Start(customer.Order!);
-    }
-
-    private void OnBrewFinished(DrinkRecipe drink)
-    {
-        Barista.PickUp(drink);
     }
 
     /// <summary>Do whatever the customer needs right now: take their order, or hand over their drink.
@@ -269,10 +304,9 @@ public partial class Shop : Node2D
         }
 
         customer.TakeOrder(Menu[Random.Shared.Next(Menu.Count)]);
-        _orderTickets.Add(customer);
     }
 
-    /// <summary>Hand the held drink to the customer, if it was made for them.</summary>
+    /// <summary>Hand the held drink to the customer, if it's what they ordered.</summary>
     private void ServeCustomer(Customer customer)
     {
         if (!CanServe(customer))
@@ -280,9 +314,7 @@ public partial class Shop : Node2D
             return;
         }
 
-        DrinkRecipe drink = Barista.HeldDrink!;
-        Barista.HandOver();
-        _drinkFor = null;
+        DrinkRecipe drink = CoffeeBar.HandOverDrink();
         FreeSpotOf(customer);
         customer.LeaveThrough(Door.GlobalPosition);
         Till.AddSale(drink.Price);
@@ -334,11 +366,10 @@ public partial class Shop : Node2D
         _spots[spot] = customer;
     }
 
-    /// <summary>An impatient customer leaves without paying, and their spot and any order ticket are cleared.</summary>
+    /// <summary>An impatient customer leaves without paying, freeing their spot.</summary>
     private void OnCustomerGaveUp(Customer customer)
     {
         FreeSpotOf(customer);
-        _orderTickets.Remove(customer);
         customer.LeaveThrough(Door.GlobalPosition);
         _today.RecordLostCustomer();
         GD.Print($"A customer gave up waiting ({CountWaitingCustomers()} still waiting).");
@@ -380,4 +411,7 @@ public partial class Shop : Node2D
     {
         return ServeSpot.GlobalPosition + Vector2.Up * QueueSpacing * index;
     }
+
+    /// <summary>A brew counter station's rules: whether clicking it does anything right now, and what it does.</summary>
+    private readonly record struct StationActions(Func<bool> CanUse, Action Use);
 }

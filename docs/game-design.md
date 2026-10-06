@@ -6,8 +6,22 @@ The player inherits a small, empty store. All that was left behind is a kettle, 
 ## Core loop (per day)
 1. Customers come in through the door in the back wall and take a free spot along the service counter while the shop is open.
 2. Each customer thinks for a moment, then shows a "ready" bubble.
-3. The player clicks any ready customer to take their order. Orders are brewed at the brew counter oldest first, and each drink is served to the customer it was made for.
-4. Patience only runs once a customer is ready to order, gets a small boost when their order is taken, and pauses while their drink is made. Customers who run out leave without paying.
+3. The player clicks any ready customer to take their order, makes the drink at the brew counter, and serves it to any customer who ordered that drink.
+4. Patience only runs once a customer is ready to order, and gets a small boost when their order is taken. Customers who run out leave without paying.
+
+## Making instant coffee
+Each step is a click on a brew counter station; the barista walks over and does it.
+
+| Step | Station | Needs |
+|---|---|---|
+| Lift the kettle | Kettle base | Empty hands, empty kettle |
+| Fill it (a few seconds; the barista waits) | Sink | Holding the empty kettle |
+| Put it back and boil (the barista is free meanwhile) | Kettle base | Holding the full kettle |
+| Grab a cup (click again to put an empty one back) | Cup stack | Empty hands |
+| Add granules | Coffee jar | Holding an empty cup |
+| Pour hot water | Kettle base | Kettle boiled, holding a cup of granules |
+
+The starting kettle only holds one cup, so every coffee needs a fresh fill and boil. A bigger kettle is a planned Equipment upgrade. A cup of granules or an unwanted drink can be tipped out at the sink.
 5. At closing time the last customers are served, the day's results are shown, and progress is saved.
 
 ## Progression
@@ -24,9 +38,9 @@ Money earned is spent between days on upgrades. Planned categories:
 ## Starting store (day 1)
 - Small single room in the centre of the screen. The rest of the building is dark, unrenovated space.
 - A worn service counter runs up the middle of the room from the front: customers on the right, the barista on the left.
-- A brew counter against the barista's back (left) wall holds the kettle and a stack of take-away cups.
+- A brew counter against the barista's back (left) wall holds a sink, the kettle on its base, a jar of instant coffee and a stack of take-away cups.
 - The door is in the back wall, on the customers' side.
-- Menu: Instant Coffee only ($2, 4 s to boil).
+- Menu: Instant Coffee only ($2). The kettle holds one cup.
 - Short queue (4) and a customer every ~5 s.
 
 ## Decor that tells the story

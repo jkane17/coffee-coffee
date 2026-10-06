@@ -1,64 +1,35 @@
 using Godot;
 
-/// <summary>Shows what the brewer is making and how far along it is. Hidden while the brewer is idle.</summary>
+/// <summary>Shows what the kettle is doing (filling, boiling, boiled) and how far along it is. Hidden while the kettle is idle.</summary>
 public partial class BrewStatus : VBoxContainer
 {
-    [Export] public Label DrinkLabel { get; set; } = null!;
+    [Export] public Label StatusLabel { get; set; } = null!;
     [Export] public ProgressBar BrewBar { get; set; } = null!;
 
-    private Brewer? _brewer;
+    private Kettle? _kettle;
 
-    /// <summary>Start displaying the given brewer, replacing any brewer shown before.</summary>
-    public void ShowBrewer(Brewer brewer)
+    /// <summary>Start displaying the given kettle, replacing any kettle shown before.</summary>
+    public void ShowKettle(Kettle kettle)
     {
-        StopShowingBrewer();
-        _brewer = brewer;
-        _brewer.BrewStarted += OnBrewStarted;
-        _brewer.BrewFinished += OnBrewFinished;
-
-        if (_brewer.CurrentDrink is DrinkRecipe drink)
-        {
-            OnBrewStarted(drink);
-        }
-        else
-        {
-            Visible = false;
-        }
+        _kettle = kettle;
     }
 
     public override void _Process(double delta)
     {
-        // Progress changes every frame, so poll it rather than raising an event per frame.
-        if (_brewer is { IsBusy: true })
+        // The kettle's state and progress change over time, so poll them rather than listening for events.
+        string? status = _kettle?.State switch
         {
-            BrewBar.Value = _brewer.Progress * BrewBar.MaxValue;
-        }
-    }
+            KettleState.Filling => "Filling the kettle...",
+            KettleState.Boiling => "Boiling...",
+            KettleState.Boiled => "Kettle boiled",
+            _ => null,
+        };
 
-    public override void _ExitTree()
-    {
-        StopShowingBrewer();
-    }
-
-    private void StopShowingBrewer()
-    {
-        if (_brewer is not null)
+        Visible = status is not null;
+        if (_kettle is not null && status is not null)
         {
-            _brewer.BrewStarted -= OnBrewStarted;
-            _brewer.BrewFinished -= OnBrewFinished;
-            _brewer = null;
+            StatusLabel.Text = status;
+            BrewBar.Value = _kettle.Progress * BrewBar.MaxValue;
         }
-    }
-
-    private void OnBrewStarted(DrinkRecipe drink)
-    {
-        DrinkLabel.Text = $"Brewing {drink.DisplayName}...";
-        BrewBar.Value = 0;
-        Visible = true;
-    }
-
-    private void OnBrewFinished(DrinkRecipe drink)
-    {
-        Visible = false;
     }
 }

@@ -122,3 +122,8 @@ Godot concepts covered so far, so they don't get re-explained. Claude appends to
 ## Taking orders (step 18)
 - **State machines with an enum**: one `State` value (Queueing → Thinking → ReadyToOrder → …) replaces several bools, so impossible mixes (leaving *and* being served) can't happen, and `_Process` can `switch` on it to decide what to tick. Used in: `scenes/customer/CustomerState.cs`, `Customer.cs`
 - **Countdowns in _Process**: subtracting `delta` from a field is the simplest one-off timer, and it stops automatically when the game is paused or the node is freed. Used in: `Customer.cs` (thinking time)
+
+## Making instant coffee (step 19)
+- **Use Parent Material**: a CanvasItem setting that draws the node with its parent's material, so one ShaderMaterial (the hover outline) covers a parent and its children. Used in: `scenes/shop/shop.tscn` (kettle on its base)
+- **Area2D as a station**: a station is just a sprite with a `Clickable` child; the Shop maps each click area to what it does, and uses the area's position to work out where the barista should stand. Used in: `scenes/shop/Shop.cs`
+- **Visible doesn't disable physics**: hiding a node stops it drawing, but its Area2D still answers point queries. That's why the click area sits on the kettle *base*, which stays clickable while the kettle is carried. Used in: `shop.tscn`

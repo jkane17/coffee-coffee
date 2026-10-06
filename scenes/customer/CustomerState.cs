@@ -10,11 +10,8 @@ public enum CustomerState
     /// <summary>Decided, and waiting for the barista to take their order. Patience starts here.</summary>
     ReadyToOrder,
 
-    /// <summary>Order taken, waiting for the drink to be made.</summary>
+    /// <summary>Order taken, waiting for the drink. Patience keeps running until they're served.</summary>
     Ordered,
-
-    /// <summary>Their drink is being made or handed over. Patience is paused.</summary>
-    BeingServed,
 
     /// <summary>Walking out, served or not.</summary>
     Leaving,

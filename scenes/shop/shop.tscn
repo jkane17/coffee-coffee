@@ -4,24 +4,29 @@
 [ext_resource type="PackedScene" uid="uid://tvjodhiqwomq" path="res://scenes/customer/customer.tscn" id="2_qaxay"]
 [ext_resource type="Script" uid="uid://dld8qwimxwovx" path="res://game/orders/DrinkRecipe.cs" id="3_ptf86"]
 [ext_resource type="Resource" uid="uid://dt7t8eyqsgieb" path="res://resources/drinks/instant_coffee.tres" id="4_dww4p"]
+[ext_resource type="Texture2D" uid="uid://bg2bcup3mcsqy" path="res://assets/art/drinks/cup_empty.svg" id="5_f8gqx"]
+[ext_resource type="Texture2D" uid="uid://b1ywjm721nqbf" path="res://assets/art/drinks/cup_granules.svg" id="6_wjgtv"]
 [ext_resource type="Texture2D" uid="uid://jas46mhw2w8a" path="res://assets/art/shop/service_counter.svg" id="7_5y7fm"]
 [ext_resource type="Texture2D" uid="uid://ck47ys1lqrf05" path="res://assets/art/shop/floor_tile.svg" id="7_vk20h"]
 [ext_resource type="PackedScene" uid="uid://klsq871q5lpe" path="res://scenes/barista/barista.tscn" id="8_dww4p"]
 [ext_resource type="Texture2D" uid="uid://c0eq4635x8tch" path="res://assets/art/shop/brew_counter.svg" id="8_toxgp"]
 [ext_resource type="Shader" uid="uid://b8m1171aqstb" path="res://scenes/common/outline.gdshader" id="10_131kw"]
+[ext_resource type="Texture2D" uid="uid://d3cnxaejlv6r2" path="res://assets/art/shop/sink.svg" id="10_bnu54"]
 [ext_resource type="Texture2D" uid="uid://c8caa41qua05f" path="res://assets/art/shop/door.svg" id="10_g6lcs"]
 [ext_resource type="Texture2D" uid="uid://c6v5km103h2ns" path="res://assets/art/shop/kettle.svg" id="11_xoc10"]
 [ext_resource type="Texture2D" uid="uid://plwvbo7dcc8e" path="res://assets/art/decor/dusty_window.svg" id="12_36j3v"]
+[ext_resource type="Texture2D" uid="uid://di8fw7btduolb" path="res://assets/art/shop/kettle_base.svg" id="12_noimi"]
 [ext_resource type="Script" uid="uid://b37paq3exwaeg" path="res://scenes/common/Clickable.cs" id="12_xoc10"]
 [ext_resource type="Texture2D" uid="uid://cm5dnwipslker" path="res://assets/art/decor/old_photo.svg" id="13_5y7fm"]
 [ext_resource type="Texture2D" uid="uid://c7c2r6wbfvrjn" path="res://assets/art/shop/takeaway_cups.svg" id="13_k5co3"]
+[ext_resource type="Texture2D" uid="uid://bq5duw5rqhwql" path="res://assets/art/shop/coffee_jar.svg" id="14_f8gqx"]
 [ext_resource type="Texture2D" uid="uid://dumycq2g0r2yy" path="res://assets/art/decor/cobweb.svg" id="14_toxgp"]
 [ext_resource type="Texture2D" uid="uid://rdei81c1gmjt" path="res://assets/art/decor/wilted_plant.svg" id="15_u2jek"]
 [ext_resource type="Texture2D" uid="uid://lauemo3ddj6a" path="res://assets/art/decor/cardboard_boxes.svg" id="16_bnu54"]
 [ext_resource type="Texture2D" uid="uid://8kjdf5hac8pm" path="res://assets/art/decor/doormat.svg" id="17_noimi"]
 [ext_resource type="Texture2D" uid="uid://dq5sfawj01p87" path="res://assets/art/decor/open_sign.svg" id="18_f8gqx"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_lu5oa"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_wjgtv"]
 shader = ExtResource("10_131kw")
 shader_parameter/enabled = false
 shader_parameter/outline_color = Color(1, 0.92, 0.55, 1)
@@ -30,17 +35,41 @@ shader_parameter/width = 2.0
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wvx66"]
 size = Vector2(40, 40)
 
-[node name="Shop" type="Node2D" unique_id=1744938923 node_paths=PackedStringArray("Door", "SpawnTimer", "Barista", "BrewStationArea", "BrewSpot", "ServeSpot", "WorkArea", "QueueStart")]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_lu5oa"]
+shader = ExtResource("10_131kw")
+shader_parameter/enabled = false
+shader_parameter/outline_color = Color(1, 0.92, 0.55, 1)
+shader_parameter/width = 2.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_cxrsv"]
+shader = ExtResource("10_131kw")
+shader_parameter/enabled = false
+shader_parameter/outline_color = Color(1, 0.92, 0.55, 1)
+shader_parameter/width = 2.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8jxaa"]
+shader = ExtResource("10_131kw")
+shader_parameter/enabled = false
+shader_parameter/outline_color = Color(1, 0.92, 0.55, 1)
+shader_parameter/width = 2.0
+
+[node name="Shop" type="Node2D" unique_id=1744938923 node_paths=PackedStringArray("Door", "SpawnTimer", "Barista", "ServeSpot", "WorkArea", "KettleArea", "SinkArea", "CupStackArea", "GranulesArea", "KettleOnBase", "QueueStart")]
 script = ExtResource("1_100s2")
 CustomerScene = ExtResource("2_qaxay")
 Door = NodePath("Door")
 SpawnTimer = NodePath("SpawnTimer")
 Menu = Array[ExtResource("3_ptf86")]([ExtResource("4_dww4p")])
 Barista = NodePath("Barista")
-BrewStationArea = NodePath("Kettle/ClickArea")
-BrewSpot = NodePath("BrewSpot")
 ServeSpot = NodePath("ServeSpot")
 WorkArea = NodePath("WorkArea")
+KettleArea = NodePath("KettleBase/ClickArea")
+SinkArea = NodePath("Sink/ClickArea")
+CupStackArea = NodePath("CupStack/ClickArea")
+GranulesArea = NodePath("CoffeeJar/ClickArea")
+KettleOnBase = NodePath("KettleBase/Kettle")
+InstantCoffee = ExtResource("4_dww4p")
+EmptyCupTexture = ExtResource("5_f8gqx")
+GranulesCupTexture = ExtResource("6_wjgtv")
 QueueStart = NodePath("QueueStart")
 
 [node name="Background" type="ColorRect" parent="." unique_id=1281561567]
@@ -77,21 +106,58 @@ texture = ExtResource("7_5y7fm")
 position = Vector2(408, 442)
 texture = ExtResource("8_toxgp")
 
-[node name="Kettle" type="Sprite2D" parent="." unique_id=1188766127]
-material = SubResource("ShaderMaterial_lu5oa")
-position = Vector2(408, 340)
-texture = ExtResource("11_xoc10")
+[node name="Sink" type="Sprite2D" parent="." unique_id=1587199978]
+material = SubResource("ShaderMaterial_wjgtv")
+position = Vector2(408, 350)
+texture = ExtResource("10_bnu54")
 
-[node name="ClickArea" type="Area2D" parent="Kettle" unique_id=586938244 node_paths=PackedStringArray("OutlineTarget")]
+[node name="ClickArea" type="Area2D" parent="Sink" unique_id=592175286 node_paths=PackedStringArray("OutlineTarget")]
 script = ExtResource("12_xoc10")
 OutlineTarget = NodePath("..")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Kettle/ClickArea" unique_id=1413377494]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sink/ClickArea" unique_id=1121572674]
 shape = SubResource("RectangleShape2D_wvx66")
 
-[node name="Cups" type="Sprite2D" parent="." unique_id=1843635966]
-position = Vector2(408, 380)
+[node name="KettleBase" type="Sprite2D" parent="." unique_id=1188766127]
+material = SubResource("ShaderMaterial_lu5oa")
+position = Vector2(408, 410)
+texture = ExtResource("12_noimi")
+
+[node name="ClickArea" type="Area2D" parent="KettleBase" unique_id=586938244 node_paths=PackedStringArray("OutlineTarget")]
+script = ExtResource("12_xoc10")
+OutlineTarget = NodePath("..")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="KettleBase/ClickArea" unique_id=1413377494]
+shape = SubResource("RectangleShape2D_wvx66")
+
+[node name="Kettle" type="Sprite2D" parent="KettleBase" unique_id=840772087]
+use_parent_material = true
+position = Vector2(0, -3)
+texture = ExtResource("11_xoc10")
+
+[node name="CoffeeJar" type="Sprite2D" parent="." unique_id=535108785]
+material = SubResource("ShaderMaterial_cxrsv")
+position = Vector2(408, 470)
+texture = ExtResource("14_f8gqx")
+
+[node name="ClickArea" type="Area2D" parent="CoffeeJar" unique_id=883748133 node_paths=PackedStringArray("OutlineTarget")]
+script = ExtResource("12_xoc10")
+OutlineTarget = NodePath("..")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CoffeeJar/ClickArea" unique_id=1362495380]
+shape = SubResource("RectangleShape2D_wvx66")
+
+[node name="CupStack" type="Sprite2D" parent="." unique_id=1441108880]
+material = SubResource("ShaderMaterial_8jxaa")
+position = Vector2(408, 530)
 texture = ExtResource("13_k5co3")
+
+[node name="ClickArea" type="Area2D" parent="CupStack" unique_id=664713327 node_paths=PackedStringArray("OutlineTarget")]
+script = ExtResource("12_xoc10")
+OutlineTarget = NodePath("..")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CupStack/ClickArea" unique_id=680839875]
+shape = SubResource("RectangleShape2D_wvx66")
 
 [node name="Decor" type="Node2D" parent="." unique_id=1584621539]
 
@@ -135,9 +201,6 @@ position = Vector2(702, 160)
 
 [node name="QueueStart" type="Marker2D" parent="." unique_id=2053379798]
 position = Vector2(624, 570)
-
-[node name="BrewSpot" type="Marker2D" parent="." unique_id=1969358492]
-position = Vector2(458, 346)
 
 [node name="ServeSpot" type="Marker2D" parent="." unique_id=239140205]
 position = Vector2(502, 570)

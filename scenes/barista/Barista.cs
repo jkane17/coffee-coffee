@@ -1,16 +1,13 @@
 using System;
 using Godot;
 
-/// <summary>The player's barista: walks where they're sent, then does what was asked on arrival, and can carry one drink.</summary>
+/// <summary>The player's barista: walks where they're sent, then does what was asked on arrival, and shows what they're carrying.</summary>
 public partial class Barista : Node2D
 {
     [Export] public Walker Walker { get; set; } = null!;
-    [Export] public Sprite2D HeldDrinkSprite { get; set; } = null!;
+    [Export] public Sprite2D HeldItemSprite { get; set; } = null!;
 
     private Action? _onArrived;
-
-    /// <summary>The drink the barista is carrying, or null if their hands are empty.</summary>
-    public DrinkRecipe? HeldDrink { get; private set; }
 
     public override void _Ready()
     {
@@ -24,17 +21,12 @@ public partial class Barista : Node2D
         Walker.WalkTo(globalTarget);
     }
 
-    public void PickUp(DrinkRecipe drink)
+    /// <summary>Show the item being carried, or nothing when <paramref name="item"/> is null.
+    /// The barista only displays it; what they're actually holding is tracked by <see cref="CoffeeBar"/>.</summary>
+    public void Hold(Texture2D? item)
     {
-        HeldDrink = drink;
-        HeldDrinkSprite.Texture = drink.Icon;
-        HeldDrinkSprite.Visible = true;
-    }
-
-    public void HandOver()
-    {
-        HeldDrink = null;
-        HeldDrinkSprite.Visible = false;
+        HeldItemSprite.Texture = item;
+        HeldItemSprite.Visible = item is not null;
     }
 
     private void OnWalkerArrived()

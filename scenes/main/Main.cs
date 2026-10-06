@@ -25,7 +25,7 @@ public partial class Main : Node
         }
 
         Hud.ShowTill(Shop.Till);
-        Hud.ShowBrewer(Shop.Brewer);
+        Hud.ShowKettle(Shop.CoffeeBar.Kettle);
         Hud.ShowClock(Shop.Clock);
 
         Shop.DayEnded += OnDayEnded;

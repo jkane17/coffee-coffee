@@ -34,8 +34,8 @@ public partial class Customer : Node2D
     [Export(PropertyHint.Range, "0,10,0.5,suffix:s")] public float MaxThinkSeconds { get; set; } = 4f;
 
     [ExportGroup("Patience")]
-    [Export(PropertyHint.Range, "1,120,1,suffix:s")] public float MinPatienceSeconds { get; set; } = 15f;
-    [Export(PropertyHint.Range, "1,120,1,suffix:s")] public float MaxPatienceSeconds { get; set; } = 30f;
+    [Export(PropertyHint.Range, "1,120,1,suffix:s")] public float MinPatienceSeconds { get; set; } = 30f;
+    [Export(PropertyHint.Range, "1,120,1,suffix:s")] public float MaxPatienceSeconds { get; set; } = 50f;
     /// <summary>Patience given back when the barista takes the order.</summary>
     [Export(PropertyHint.Range, "0,60,1,suffix:s")] public float OrderTakenPatienceBoost { get; set; } = 5f;
 
@@ -94,12 +94,6 @@ public partial class Customer : Node2D
         ReadyIndicator.Visible = false;
         OrderBubble.Visible = true;
         _patience.Restore(OrderTakenPatienceBoost);
-    }
-
-    /// <summary>Their drink is being made: stop losing patience.</summary>
-    public void StartBeingServed()
-    {
-        State = CustomerState.BeingServed;
     }
 
     /// <summary>Walk to the exit, then remove this customer from the scene.</summary>

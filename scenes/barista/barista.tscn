@@ -10,16 +10,16 @@ _data = {
 &"walk": ExtResource("4_hq0a2")
 }
 
-[node name="Barista" type="Node2D" unique_id=406427301 node_paths=PackedStringArray("Walker", "HeldDrinkSprite")]
+[node name="Barista" type="Node2D" unique_id=406427301 node_paths=PackedStringArray("Walker", "HeldItemSprite")]
 script = ExtResource("1_4r1d1")
 Walker = NodePath("Walker")
-HeldDrinkSprite = NodePath("HeldDrink")
+HeldItemSprite = NodePath("HeldItem")
 
 [node name="Body" type="Sprite2D" parent="." unique_id=1583426475]
 texture = ExtResource("2_fpq83")
 offset = Vector2(0, -28)
 
-[node name="HeldDrink" type="Sprite2D" parent="." unique_id=283571589]
+[node name="HeldItem" type="Sprite2D" parent="." unique_id=283571589]
 visible = false
 position = Vector2(0, -72)
 
