@@ -35,6 +35,7 @@ public partial class Main : Node
 
         if (_saveToContinue is null)
         {
+            Hud.SetShopInfoVisible(false);
             Intro.Finished += BeginDay;
             Intro.Play(Shop, Hud);
         }
@@ -47,7 +48,13 @@ public partial class Main : Node
     /// <summary>Announce the next day with a banner, then open the shop once it's gone.</summary>
     private void BeginDay()
     {
-        Hud.ShowDayBanner(Shop.NextDayNumber, Shop.StartDay);
+        Hud.ShowDayBanner(Shop.NextDayNumber, OpenShop);
+    }
+
+    private void OpenShop()
+    {
+        Hud.SetShopInfoVisible(true);
+        Shop.StartDay();
     }
 
     private void OnDayEnded(DayStats stats)

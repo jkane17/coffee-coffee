@@ -54,6 +54,13 @@ public partial class Hud : CanvasLayer
         }));
     }
 
+    /// <summary>Show or hide the shop's money and clock, e.g. hidden during the intro before there's a shop to run.</summary>
+    public void SetShopInfoVisible(bool visible)
+    {
+        MoneyLabel.Visible = visible;
+        ClockLabel.Visible = visible;
+    }
+
     /// <summary>Show a hint at the top of the screen, or hide it with null.</summary>
     public void ShowHint(string? hint)
     {
