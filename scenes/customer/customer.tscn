@@ -73,10 +73,10 @@ offset = Vector2(0, -28)
 
 [node name="Order" type="HBoxContainer" parent="." unique_id=1212114245]
 visible = false
-offset_left = -38.0
-offset_top = -96.0
-offset_right = 38.0
-offset_bottom = -56.0
+offset_left = 24.0
+offset_top = -76.0
+offset_right = 100.0
+offset_bottom = -36.0
 mouse_filter = 2
 
 [node name="OrderIcon" type="TextureRect" parent="Order" unique_id=199109693]
@@ -105,9 +105,9 @@ AnimationPlayer = NodePath("../AnimationPlayer")
 libraries/ = SubResource("AnimationLibrary_bd2f2")
 
 [node name="ReadyIndicator" type="Sprite2D" parent="." unique_id=1489410341]
-position = Vector2(0, -80)
+position = Vector2(40, -60)
 texture = ExtResource("10_e0ilm")
 
 [node name="ThinkingIndicator" type="Sprite2D" parent="." unique_id=1252334259]
-position = Vector2(0, -80)
+position = Vector2(40, -60)
 texture = ExtResource("11_bd2f2")

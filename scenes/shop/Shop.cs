@@ -2,13 +2,12 @@ using System;
 using System.Collections.Generic;
 using Godot;
 
-/// <summary>The shop floor: runs the working day, spawns customers while open, lines them up,
-/// and turns the player's clicks into barista actions (brewing and serving).</summary>
+/// <summary>The shop floor: runs the working day, spawns customers while open, gives each a spot at the service counter,
+/// and turns the player's clicks into barista actions (taking orders, brewing and serving).</summary>
 public partial class Shop : Node2D
 {
     [Export] public PackedScene CustomerScene { get; set; } = null!;
     [Export] public Marker2D Door { get; set; } = null!;
-    [Export] public Marker2D Counter { get; set; } = null!;
     [Export] public Timer SpawnTimer { get; set; } = null!;
     [Export] public Godot.Collections.Array<DrinkRecipe> Menu { get; set; } = new();
 
@@ -17,12 +16,14 @@ public partial class Shop : Node2D
     [Export] public Area2D BrewStationArea { get; set; } = null!;
     /// <summary>Where the barista stands to use the brew station.</summary>
     [Export] public Marker2D BrewSpot { get; set; } = null!;
-    /// <summary>Where the barista stands to serve the front customer.</summary>
+    /// <summary>Where the barista stands to serve the customer at the first counter spot. Later spots are spaced like the customers' spots.</summary>
     [Export] public Marker2D ServeSpot { get; set; } = null!;
-    /// <summary>The area behind the counter the barista can walk in. Floor clicks outside it are clamped into it.</summary>
+    /// <summary>The area behind the service counter the barista can walk in. Floor clicks outside it are clamped into it.</summary>
     [Export] public Control WorkArea { get; set; } = null!;
 
     [ExportGroup("Queue")]
+    /// <summary>Where the first customer stands, near the bottom of the service counter. Later spots run up the counter from here.</summary>
+    [Export] public Marker2D QueueStart { get; set; } = null!;
     [Export(PropertyHint.Range, "1,20,1")] public int MaxQueueLength { get; set; } = 4;
     [Export] public float QueueSpacing { get; set; } = 60f;
 
@@ -31,7 +32,14 @@ public partial class Shop : Node2D
     [Export(PropertyHint.Range, "0,23,1")] public int OpenHour { get; set; } = 8;
     [Export(PropertyHint.Range, "1,24,1")] public int CloseHour { get; set; } = 17;
 
-    private readonly List<Customer> _queue = new();
+    /// <summary>Who is standing at each spot along the service counter. Customers keep their spot until they leave.</summary>
+    private Customer?[] _spots = Array.Empty<Customer?>();
+
+    /// <summary>Taken orders that haven't been brewed yet, oldest first.</summary>
+    private readonly List<Customer> _orderTickets = new();
+
+    /// <summary>Who the drink being brewed or carried is for.</summary>
+    private Customer? _drinkFor;
     private DayStats _today = new(0);
     private int _daysCompleted;
     private bool _isDayRunning;
@@ -59,6 +67,7 @@ public partial class Shop : Node2D
             GD.PushError("The shop's Menu is empty. Add DrinkRecipe resources to it in the Inspector.");
         }
 
+        _spots = new Customer?[MaxQueueLength];
         Clock = new DayClock(DayLengthSeconds, OpenHour, CloseHour);
         Clock.Closed += OnClosingTime;
         SpawnTimer.Timeout += OnSpawnTimerTimeout;
@@ -127,7 +136,11 @@ public partial class Shop : Node2D
         }
         else if (clicked?.GetParent() is Customer customer)
         {
-            Barista.WalkTo(ServeSpot.GlobalPosition, () => AttendTo(customer));
+            int spot = Array.IndexOf(_spots, customer);
+            if (spot >= 0)
+            {
+                Barista.WalkTo(GetServePosition(spot), () => AttendTo(customer));
+            }
         }
         else
         {
@@ -169,22 +182,22 @@ public partial class Shop : Node2D
         return area.GetParent() is Customer customer && (CanTakeOrder(customer) || CanServe(customer));
     }
 
-    /// <summary>The brew station is usable when it's free, the barista's hands are empty, and the front customer's order has been taken.</summary>
+    /// <summary>The brew station is usable when it's free, the barista's hands are empty, and there's an order waiting to be made.</summary>
     private bool CanUseBrewStation()
     {
-        return !Brewer.IsBusy && Barista.HeldDrink is null && _queue.Count > 0 && _queue[0].State == CustomerState.Ordered;
+        return !Brewer.IsBusy && Barista.HeldDrink is null && _orderTickets.Count > 0;
     }
 
-    /// <summary>An order can be taken from the front customer once they've decided what they want.</summary>
+    /// <summary>An order can be taken from any customer at the counter once they've decided what they want.</summary>
     private bool CanTakeOrder(Customer customer)
     {
-        return _queue.Count > 0 && _queue[0] == customer && customer.State == CustomerState.ReadyToOrder;
+        return customer.State == CustomerState.ReadyToOrder;
     }
 
-    /// <summary>A customer can be served when they're at the front and the barista is holding what they ordered.</summary>
+    /// <summary>A customer can be served when the barista is carrying the drink that was made for them.</summary>
     private bool CanServe(Customer customer)
     {
-        return _queue.Count > 0 && _queue[0] == customer && Barista.HeldDrink is not null && customer.Order == Barista.HeldDrink;
+        return Barista.HeldDrink is not null && customer == _drinkFor;
     }
 
     /// <summary>Ask the physics engine which Area2D, if any, is under a point.</summary>
@@ -208,7 +221,7 @@ public partial class Shop : Node2D
         return null;
     }
 
-    /// <summary>Brew the front customer's order, if they've ordered and the barista's hands are free.</summary>
+    /// <summary>Brew the oldest order that's still waiting, if the barista's hands are free.</summary>
     private void UseBrewStation()
     {
         if (!CanUseBrewStation())
@@ -216,8 +229,11 @@ public partial class Shop : Node2D
             return;
         }
 
-        _queue[0].StartBeingServed();
-        Brewer.Start(_queue[0].Order!);
+        Customer customer = _orderTickets[0];
+        _orderTickets.RemoveAt(0);
+        _drinkFor = customer;
+        customer.StartBeingServed();
+        Brewer.Start(customer.Order!);
     }
 
     private void OnBrewFinished(DrinkRecipe drink)
@@ -229,6 +245,12 @@ public partial class Shop : Node2D
     /// Checked on arrival, because things may have changed while the barista was walking over.</summary>
     private void AttendTo(Customer customer)
     {
+        // They may have given up and walked out while the barista was on the way.
+        if (!IsInstanceValid(customer))
+        {
+            return;
+        }
+
         if (CanTakeOrder(customer))
         {
             TakeOrderFrom(customer);
@@ -247,9 +269,10 @@ public partial class Shop : Node2D
         }
 
         customer.TakeOrder(Menu[Random.Shared.Next(Menu.Count)]);
+        _orderTickets.Add(customer);
     }
 
-    /// <summary>Hand the held drink to the customer, if they're at the front and it's what they ordered.</summary>
+    /// <summary>Hand the held drink to the customer, if it was made for them.</summary>
     private void ServeCustomer(Customer customer)
     {
         if (!CanServe(customer))
@@ -259,13 +282,13 @@ public partial class Shop : Node2D
 
         DrinkRecipe drink = Barista.HeldDrink!;
         Barista.HandOver();
-        _queue.RemoveAt(0);
+        _drinkFor = null;
+        FreeSpotOf(customer);
         customer.LeaveThrough(Door.GlobalPosition);
         Till.AddSale(drink.Price);
         _today.RecordSale(drink.Price);
         GD.Print($"Served a {drink.DisplayName} for $ {drink.Price}.");
 
-        MoveQueueForward();
         EndDayIfFinished();
     }
 
@@ -279,7 +302,7 @@ public partial class Shop : Node2D
     /// <summary>The day ends once the shop is closed and nobody is left waiting.</summary>
     private void EndDayIfFinished()
     {
-        if (_isDayRunning && !Clock.IsOpen && _queue.Count == 0)
+        if (_isDayRunning && !Clock.IsOpen && CountWaitingCustomers() == 0)
         {
             _isDayRunning = false;
             _daysCompleted = _today.DayNumber;
@@ -289,55 +312,72 @@ public partial class Shop : Node2D
 
     private void OnSpawnTimerTimeout()
     {
-        if (_queue.Count < MaxQueueLength)
-        {
-            SpawnCustomer();
-        }
+        SpawnCustomer();
     }
 
+    /// <summary>Send a new customer in to the first free spot at the counter. Does nothing if every spot is taken.</summary>
     private void SpawnCustomer()
     {
+        int spot = Array.IndexOf(_spots, null);
+        if (spot < 0)
+        {
+            return;
+        }
+
         Customer customer = CustomerScene.Instantiate<Customer>();
         AddChild(customer);
         customer.GlobalPosition = Door.GlobalPosition;
-        customer.Arrived += () => OnCustomerArrived(customer);
+        // Everyone starts deciding what to order as soon as they reach their spot.
+        customer.Arrived += customer.StartThinking;
         customer.GaveUp += () => OnCustomerGaveUp(customer);
-        customer.WalkTo(GetQueueSlotPosition(_queue.Count));
-        _queue.Add(customer);
+        customer.WalkTo(GetSpotPosition(spot));
+        _spots[spot] = customer;
     }
 
-    /// <summary>A customer who reaches the front of the line starts deciding what to order.</summary>
-    private void OnCustomerArrived(Customer customer)
-    {
-        if (_queue.Count > 0 && _queue[0] == customer)
-        {
-            customer.StartThinking();
-        }
-    }
-
-    /// <summary>An impatient customer leaves without paying, and everyone behind them moves up.</summary>
+    /// <summary>An impatient customer leaves without paying, and their spot and any order ticket are cleared.</summary>
     private void OnCustomerGaveUp(Customer customer)
     {
-        _queue.Remove(customer);
+        FreeSpotOf(customer);
+        _orderTickets.Remove(customer);
         customer.LeaveThrough(Door.GlobalPosition);
         _today.RecordLostCustomer();
-        GD.Print($"A customer gave up waiting ({_queue.Count} still waiting).");
+        GD.Print($"A customer gave up waiting ({CountWaitingCustomers()} still waiting).");
 
-        MoveQueueForward();
         EndDayIfFinished();
     }
 
-    private void MoveQueueForward()
+    private void FreeSpotOf(Customer customer)
     {
-        for (int i = 0; i < _queue.Count; i++)
+        int spot = Array.IndexOf(_spots, customer);
+        if (spot >= 0)
         {
-            _queue[i].WalkTo(GetQueueSlotPosition(i));
+            _spots[spot] = null;
         }
     }
 
-    /// <summary>Slot 0 is at the counter; each later slot is one step further back down the line.</summary>
-    private Vector2 GetQueueSlotPosition(int index)
+    private int CountWaitingCustomers()
     {
-        return Counter.GlobalPosition + Vector2.Down * QueueSpacing * index;
+        int count = 0;
+        foreach (Customer? customer in _spots)
+        {
+            if (customer is not null)
+            {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    /// <summary>Spot 0 is near the bottom of the service counter; each later spot is one step further up it.</summary>
+    private Vector2 GetSpotPosition(int index)
+    {
+        return QueueStart.GlobalPosition + Vector2.Up * QueueSpacing * index;
+    }
+
+    /// <summary>Where the barista stands, across the counter from a customer's spot.</summary>
+    private Vector2 GetServePosition(int index)
+    {
+        return ServeSpot.GlobalPosition + Vector2.Up * QueueSpacing * index;
     }
 }

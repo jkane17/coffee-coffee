@@ -66,7 +66,7 @@ public partial class Customer : Node2D
 
     public void WalkTo(Vector2 globalTarget) => Walker.WalkTo(globalTarget);
 
-    /// <summary>They've reached the front: spend a moment deciding, then ask to order. Ignored if they're already past queueing.</summary>
+    /// <summary>They've reached their spot at the counter: spend a moment deciding, then ask to order. Ignored if they're already past queueing.</summary>
     public void StartThinking()
     {
         if (State != CustomerState.Queueing)
