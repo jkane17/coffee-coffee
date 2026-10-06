@@ -5,9 +5,9 @@ The player inherits a small, empty store. All that was left behind is a kettle, 
 
 ## Core loop (per day)
 1. Customers arrive and queue at the counter while the shop is open.
-2. The customer at the front orders a drink from the menu.
-3. The player clicks the brew station to make it, then clicks the customer to serve it.
-4. Customers who wait too long leave without paying.
+2. The customer at the front thinks for a moment, then shows a "ready" bubble.
+3. The player clicks them to take their order, clicks the brew station to make it, then clicks the customer again to serve it.
+4. Patience only runs once a customer is ready to order, gets a small boost when their order is taken, and pauses while their drink is made. Customers who run out leave without paying.
 5. At closing time the last customers are served, the day's results are shown, and progress is saved.
 
 ## Progression

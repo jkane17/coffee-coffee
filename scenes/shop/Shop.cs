@@ -110,7 +110,7 @@ public partial class Shop : Node2D
         GD.Print($"Day {_today.DayNumber}: the shop is open.");
     }
 
-    /// <summary>Send the barista to whatever was clicked: the brew station, a customer, or a spot on the floor.</summary>
+    /// <summary>Send the barista to whatever was clicked: the brew station, a customer (to take their order or serve them), or a spot on the floor.</summary>
     private void OnClick(Vector2 globalPoint)
     {
         // The barista stays at the brew station until the drink is ready.
@@ -127,7 +127,7 @@ public partial class Shop : Node2D
         }
         else if (clicked?.GetParent() is Customer customer)
         {
-            Barista.WalkTo(ServeSpot.GlobalPosition, () => ServeCustomer(customer));
+            Barista.WalkTo(ServeSpot.GlobalPosition, () => AttendTo(customer));
         }
         else
         {
@@ -166,13 +166,19 @@ public partial class Shop : Node2D
             return CanUseBrewStation();
         }
 
-        return area.GetParent() is Customer customer && CanServe(customer);
+        return area.GetParent() is Customer customer && (CanTakeOrder(customer) || CanServe(customer));
     }
 
-    /// <summary>The brew station is usable when it's free, the barista's hands are empty, and the front customer has ordered.</summary>
+    /// <summary>The brew station is usable when it's free, the barista's hands are empty, and the front customer's order has been taken.</summary>
     private bool CanUseBrewStation()
     {
-        return !Brewer.IsBusy && Barista.HeldDrink is null && _queue.Count > 0 && _queue[0].Order is not null;
+        return !Brewer.IsBusy && Barista.HeldDrink is null && _queue.Count > 0 && _queue[0].State == CustomerState.Ordered;
+    }
+
+    /// <summary>An order can be taken from the front customer once they've decided what they want.</summary>
+    private bool CanTakeOrder(Customer customer)
+    {
+        return _queue.Count > 0 && _queue[0] == customer && customer.State == CustomerState.ReadyToOrder;
     }
 
     /// <summary>A customer can be served when they're at the front and the barista is holding what they ordered.</summary>
@@ -217,6 +223,30 @@ public partial class Shop : Node2D
     private void OnBrewFinished(DrinkRecipe drink)
     {
         Barista.PickUp(drink);
+    }
+
+    /// <summary>Do whatever the customer needs right now: take their order, or hand over their drink.
+    /// Checked on arrival, because things may have changed while the barista was walking over.</summary>
+    private void AttendTo(Customer customer)
+    {
+        if (CanTakeOrder(customer))
+        {
+            TakeOrderFrom(customer);
+        }
+        else
+        {
+            ServeCustomer(customer);
+        }
+    }
+
+    private void TakeOrderFrom(Customer customer)
+    {
+        if (Menu.Count == 0)
+        {
+            return;
+        }
+
+        customer.TakeOrder(Menu[Random.Shared.Next(Menu.Count)]);
     }
 
     /// <summary>Hand the held drink to the customer, if they're at the front and it's what they ordered.</summary>
@@ -276,13 +306,12 @@ public partial class Shop : Node2D
         _queue.Add(customer);
     }
 
-    /// <summary>A customer who reaches the front of the line places their order.</summary>
+    /// <summary>A customer who reaches the front of the line starts deciding what to order.</summary>
     private void OnCustomerArrived(Customer customer)
     {
-        bool isAtFront = _queue.Count > 0 && _queue[0] == customer;
-        if (isAtFront && customer.Order is null && Menu.Count > 0)
+        if (_queue.Count > 0 && _queue[0] == customer)
         {
-            customer.PlaceOrder(Menu[Random.Shared.Next(Menu.Count)]);
+            customer.StartThinking();
         }
     }
 

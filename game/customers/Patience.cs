@@ -25,6 +25,20 @@ public sealed class Patience
     /// <summary>Raised once, when the remaining time reaches zero.</summary>
     public event Action? RanOut;
 
+    /// <summary>Give back some patience, up to the total. Does nothing once patience has run out.</summary>
+    public void Restore(double seconds)
+    {
+        if (seconds < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(seconds), seconds, "Can't restore a negative amount of patience.");
+        }
+
+        if (!HasRunOut)
+        {
+            RemainingSeconds = Math.Min(TotalSeconds, RemainingSeconds + seconds);
+        }
+    }
+
     public void Tick(double deltaSeconds)
     {
         if (HasRunOut)

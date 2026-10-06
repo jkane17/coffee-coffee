@@ -118,3 +118,7 @@ Godot concepts covered so far, so they don't get re-explained. Claude appends to
 - **Grouping with a Node2D**: a plain Node2D parent keeps related nodes together; moving or hiding the parent affects them all. Used in: `scenes/shop/shop.tscn` (`Decor`)
 - **Sprite2D Centered**: off means the texture's top-left corner sits at the node's position, useful for things anchored to a corner. Used in: `shop.tscn` (cobweb)
 - **CanvasModulate**: tints everything on its canvas layer (the shop) but not other CanvasLayers (the HUD), for cheap mood lighting. Used in: `shop.tscn`
+
+## Taking orders (step 18)
+- **State machines with an enum**: one `State` value (Queueing → Thinking → ReadyToOrder → …) replaces several bools, so impossible mixes (leaving *and* being served) can't happen, and `_Process` can `switch` on it to decide what to tick. Used in: `scenes/customer/CustomerState.cs`, `Customer.cs`
+- **Countdowns in _Process**: subtracting `delta` from a field is the simplest one-off timer, and it stops automatically when the game is paused or the node is freed. Used in: `Customer.cs` (thinking time)
