@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://rdei81c1gmjt"
-path="res://.godot/imported/wilted_plant.svg-dcc35d819e3532325fb4fed0570c117c.ctex"
+uid="uid://dykm7ltn558i0"
+path="res://.godot/imported/clean_window.svg-a91dde8bf34e30e2a76e62ecf10ea607.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/decor/wilted_plant.svg"
-dest_files=["res://.godot/imported/wilted_plant.svg-dcc35d819e3532325fb4fed0570c117c.ctex"]
+source_file="res://assets/art/decor/clean_window.svg"
+dest_files=["res://.godot/imported/clean_window.svg-a91dde8bf34e30e2a76e62ecf10ea607.ctex"]
 
 [params]
 

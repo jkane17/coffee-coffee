@@ -47,10 +47,9 @@ Money earned is spent between days on the upgrades page, opened from the end-of-
 | Equipment | Rapid-Boil Element | $30 | Kettle boils 50% faster |
 | Equipment | Bigger Kettle | $20 | +1 cup (2 total) |
 | Equipment | Family Kettle (needs Bigger Kettle) | $50 | +2 cups (4 total) |
-| Shop | Deep Clean | $10 | Removes the cobweb; patience +5% |
-| Shop | Revive the Plant | $8 | Healthy plant; patience +5% |
+| Shop | Clean the Place Up | $10 | Removes the stains, cobwebs, boxes and smashed picture, and cleans the window; patience +10% |
 
-Still to come: coffee machines and new drinks (Equipment), tables, more decor and a bigger shop (Shop).
+Still to come: coffee machines and new drinks (Equipment), tables, a bigger shop, and a decorating feature where the player places plants and other decor themselves (Shop).
 
 Longer-term categories:
 
@@ -71,16 +70,18 @@ Longer-term categories:
 - Short queue (4). Day 1 has 4 customers, spread across the day.
 
 ## Decor that tells the story
-Props in the starting store show it's inherited and a bit neglected. Several are meant to be improved by Decor upgrades:
+Props in the starting store show it's inherited and neglected. Everything in the shop scene's `Mess` node goes when the player buys **Clean the Place Up**:
 
-| Prop | Upgrade idea |
+| Prop | After cleaning up |
 |---|---|
-| Dusty window with a taped crack | Clean / replace the window |
-| Wilted plant | Revive it, then add more plants |
-| Cardboard boxes | Clear them out to free floor space |
-| Cobweb | Deep clean |
-| Faded photo of the previous owner | Story hook (who left the store?) |
-| Handmade cardboard OPEN/CLOSED sign (appears from Day 1; flips to CLOSED at closing time) | Replace with a proper shop sign |
+| Dusty window with a taped crack | Clean window |
+| Smashed picture hanging crooked | Taken down |
+| Damp stain on the back wall | Gone |
+| Coffee stains on the floor | Gone |
+| Cobwebs (by the window and in the front corner) | Gone |
+| Cardboard boxes the coffee things came in | Cleared out |
+
+The handmade cardboard OPEN/CLOSED sign (appears from Day 1; flips to CLOSED at closing time) stays, and could be replaced with a proper shop sign later. `old_photo.svg` (the previous owner) and `healthy_plant.svg` aren't used for now; they're kept for a story hook and for decorating.
 
 ## Future unlocks already in the project
 Espresso, Latte and Cappuccino recipes exist in `resources/drinks/` but are not on the starting menu. The coffee machine and large counter art in `assets/art/shop/` are for later upgrades.

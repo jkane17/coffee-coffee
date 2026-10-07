@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="Upgrade" format=3]
+
+[ext_resource type="Script" path="res://game/upgrades/Upgrade.cs" id="1_upgrade"]
+
+[resource]
+script = ExtResource("1_upgrade")
+Id = "clean_up"
+DisplayName = "Clean the Place Up"
+Description = "Scrub the stains, sweep out the cobwebs, clear the boxes, take down the smashed picture and wash the window. Customers are 10% more patient in a clean shop."
+Category = 2
+Cost = 10
+Effect = 2
+Amount = 10

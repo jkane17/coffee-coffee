@@ -65,6 +65,8 @@ ThinkingIndicator = NodePath("ThinkingIndicator")
 ReadyIndicator = NodePath("ReadyIndicator")
 Body = NodePath("Body")
 Looks = Array[Texture2D]([ExtResource("2_duem0"), ExtResource("3_fd46v"), ExtResource("4_k1bqq")])
+MinPatienceSeconds = 45.0
+MaxPatienceSeconds = 60.0
 
 [node name="Body" type="Sprite2D" parent="." unique_id=2038738664]
 material = SubResource("ShaderMaterial_jy5aj")

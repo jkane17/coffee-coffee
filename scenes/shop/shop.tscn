@@ -19,18 +19,18 @@
 [ext_resource type="Texture2D" uid="uid://plwvbo7dcc8e" path="res://assets/art/decor/dusty_window.svg" id="12_36j3v"]
 [ext_resource type="Texture2D" uid="uid://di8fw7btduolb" path="res://assets/art/shop/kettle_base.svg" id="12_noimi"]
 [ext_resource type="Script" uid="uid://b37paq3exwaeg" path="res://scenes/common/Clickable.cs" id="12_xoc10"]
-[ext_resource type="Texture2D" uid="uid://cm5dnwipslker" path="res://assets/art/decor/old_photo.svg" id="13_5y7fm"]
 [ext_resource type="Texture2D" uid="uid://c7c2r6wbfvrjn" path="res://assets/art/shop/takeaway_cups.svg" id="13_k5co3"]
 [ext_resource type="Texture2D" uid="uid://bq5duw5rqhwql" path="res://assets/art/shop/coffee_jar.svg" id="14_f8gqx"]
 [ext_resource type="Texture2D" uid="uid://dumycq2g0r2yy" path="res://assets/art/decor/cobweb.svg" id="14_toxgp"]
-[ext_resource type="Texture2D" uid="uid://rdei81c1gmjt" path="res://assets/art/decor/wilted_plant.svg" id="15_u2jek"]
 [ext_resource type="Texture2D" uid="uid://lauemo3ddj6a" path="res://assets/art/decor/cardboard_boxes.svg" id="16_bnu54"]
 [ext_resource type="Texture2D" uid="uid://8kjdf5hac8pm" path="res://assets/art/decor/doormat.svg" id="17_noimi"]
 [ext_resource type="Texture2D" uid="uid://dq5sfawj01p87" path="res://assets/art/decor/open_sign.svg" id="18_f8gqx"]
 [ext_resource type="Script" uid="uid://dtwtm6d53c4w8" path="res://scenes/common/UpgradeVisibility.cs" id="24_njv4s"]
-[ext_resource type="Resource" path="res://resources/upgrades/deep_clean.tres" id="25_1wgjh"]
-[ext_resource type="Resource" path="res://resources/upgrades/revive_plant.tres" id="27_e1gfy"]
-[ext_resource type="Texture2D" uid="uid://co1kmdixweikb" path="res://assets/art/decor/healthy_plant.svg" id="30_p3vno"]
+[ext_resource type="Resource" path="res://resources/upgrades/clean_up.tres" id="25_cleanup"]
+[ext_resource type="Texture2D" path="res://assets/art/decor/smashed_picture.svg" id="31_smashed"]
+[ext_resource type="Texture2D" path="res://assets/art/decor/clean_window.svg" id="32_cleanwindow"]
+[ext_resource type="Texture2D" path="res://assets/art/decor/wall_stain.svg" id="33_wallstain"]
+[ext_resource type="Texture2D" path="res://assets/art/decor/floor_stain.svg" id="34_floorstain"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_wjgtv"]
 shader = ExtResource("10_131kw")
@@ -124,7 +124,7 @@ KettleArea = NodePath("KettleBase/ClickArea")
 SinkArea = NodePath("Sink/ClickArea")
 CupStackArea = NodePath("CupStack/ClickArea")
 GranulesArea = NodePath("CoffeeJar/ClickArea")
-BoxesArea = NodePath("Decor/Boxes/ClickArea")
+BoxesArea = NodePath("Mess/Boxes/ClickArea")
 PackedStations = [NodePath("KettleBase"), NodePath("CoffeeJar"), NodePath("CupStack")]
 KettleOnBase = NodePath("KettleBase/Kettle")
 InstantCoffee = ExtResource("4_dww4p")
@@ -158,6 +158,59 @@ offset_right = 768.0
 offset_bottom = 160.0
 mouse_filter = 2
 color = Color(0.8337341, 0.7586004, 0.63252044, 1)
+
+[node name="Mess" type="Node2D" parent="."]
+
+[node name="GoneAfterCleanUp" type="Node" parent="Mess"]
+script = ExtResource("24_njv4s")
+Upgrade = ExtResource("25_cleanup")
+VisibleWhenOwned = false
+
+[node name="DustyWindow" type="Sprite2D" parent="Mess" unique_id=1223659099]
+position = Vector2(440, 100)
+texture = ExtResource("12_36j3v")
+
+[node name="SmashedPicture" type="Sprite2D" parent="Mess" unique_id=1678671247]
+position = Vector2(556, 100)
+texture = ExtResource("31_smashed")
+
+[node name="WallStain" type="Sprite2D" parent="Mess"]
+position = Vector2(512, 136)
+texture = ExtResource("33_wallstain")
+
+[node name="FloorStain" type="Sprite2D" parent="Mess"]
+position = Vector2(680, 300)
+texture = ExtResource("34_floorstain")
+
+[node name="SmallFloorStain" type="Sprite2D" parent="Mess"]
+position = Vector2(712, 470)
+rotation = 0.4
+scale = Vector2(0.7, 0.7)
+texture = ExtResource("34_floorstain")
+
+[node name="WindowCobweb" type="Sprite2D" parent="Mess"]
+position = Vector2(384, 60)
+texture = ExtResource("14_toxgp")
+centered = false
+
+[node name="CornerCobweb" type="Sprite2D" parent="Mess" unique_id=2130836683]
+position = Vector2(728, 548)
+texture = ExtResource("14_toxgp")
+centered = false
+flip_h = true
+flip_v = true
+
+[node name="Boxes" type="Sprite2D" parent="Mess" unique_id=442579252]
+material = SubResource("ShaderMaterial_ncc2j")
+position = Vector2(449, 217)
+texture = ExtResource("16_bnu54")
+
+[node name="ClickArea" type="Area2D" parent="Mess/Boxes" unique_id=1987565107 node_paths=PackedStringArray("OutlineTarget")]
+script = ExtResource("12_xoc10")
+OutlineTarget = NodePath("..")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Mess/Boxes/ClickArea" unique_id=1400505467]
+shape = SubResource("RectangleShape2D_a1v00")
 
 [node name="Barista" parent="." unique_id=406427301 instance=ExtResource("8_dww4p")]
 position = Vector2(480, 442)
@@ -225,46 +278,13 @@ shape = SubResource("RectangleShape2D_wvx66")
 
 [node name="Decor" type="Node2D" parent="." unique_id=1584621539]
 
-[node name="Window" type="Sprite2D" parent="Decor" unique_id=1223659099]
+[node name="CleanWindow" type="Sprite2D" parent="Decor"]
 position = Vector2(440, 100)
-texture = ExtResource("12_36j3v")
+texture = ExtResource("32_cleanwindow")
 
-[node name="OldPhoto" type="Sprite2D" parent="Decor" unique_id=1678671247]
-position = Vector2(556, 100)
-texture = ExtResource("13_5y7fm")
-
-[node name="Cobweb" type="Sprite2D" parent="Decor" unique_id=2130836683]
-position = Vector2(728, 548)
-texture = ExtResource("14_toxgp")
-centered = false
-flip_h = true
-flip_v = true
-
-[node name="HideAfterDeepClean" type="Node" parent="Decor/Cobweb" unique_id=1779624703]
+[node name="ShownAfterCleanUp" type="Node" parent="Decor/CleanWindow"]
 script = ExtResource("24_njv4s")
-Upgrade = ExtResource("25_1wgjh")
-VisibleWhenOwned = false
-
-[node name="WiltedPlant" type="Sprite2D" parent="Decor" unique_id=2044311130]
-position = Vector2(512, 151)
-texture = ExtResource("15_u2jek")
-
-[node name="Revive" type="Node" parent="Decor/WiltedPlant" unique_id=1403303426]
-script = ExtResource("24_njv4s")
-Upgrade = ExtResource("27_e1gfy")
-VisibleWhenOwned = false
-
-[node name="Boxes" type="Sprite2D" parent="Decor" unique_id=442579252]
-material = SubResource("ShaderMaterial_ncc2j")
-position = Vector2(449, 217)
-texture = ExtResource("16_bnu54")
-
-[node name="ClickArea" type="Area2D" parent="Decor/Boxes" unique_id=1987565107 node_paths=PackedStringArray("OutlineTarget")]
-script = ExtResource("12_xoc10")
-OutlineTarget = NodePath("..")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Decor/Boxes/ClickArea" unique_id=1400505467]
-shape = SubResource("RectangleShape2D_a1v00")
+Upgrade = ExtResource("25_cleanup")
 
 [node name="Doormat" type="Sprite2D" parent="Decor" unique_id=1625494717]
 position = Vector2(702, 172)
@@ -273,14 +293,6 @@ texture = ExtResource("17_noimi")
 [node name="ShopSign" type="Sprite2D" parent="Decor" unique_id=1577757508]
 position = Vector2(622, 100)
 texture = ExtResource("18_f8gqx")
-
-[node name="HealthyPlant" type="Sprite2D" parent="Decor" unique_id=1980535142]
-position = Vector2(512, 151)
-texture = ExtResource("30_p3vno")
-
-[node name="Revive" type="Node" parent="Decor/HealthyPlant" unique_id=1539080976]
-script = ExtResource("24_njv4s")
-Upgrade = ExtResource("27_e1gfy")
 
 [node name="DoorSprite" type="Sprite2D" parent="." unique_id=221276468]
 position = Vector2(702, 112)

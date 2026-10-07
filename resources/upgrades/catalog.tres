@@ -9,9 +9,8 @@
 [ext_resource type="Resource" path="res://resources/upgrades/rapid_boil_element.tres" id="6_rapid_boil_element"]
 [ext_resource type="Resource" path="res://resources/upgrades/bigger_kettle.tres" id="7_bigger_kettle"]
 [ext_resource type="Resource" path="res://resources/upgrades/family_kettle.tres" id="8_family_kettle"]
-[ext_resource type="Resource" path="res://resources/upgrades/deep_clean.tres" id="9_deep_clean"]
-[ext_resource type="Resource" path="res://resources/upgrades/revive_plant.tres" id="10_revive_plant"]
+[ext_resource type="Resource" path="res://resources/upgrades/clean_up.tres" id="9_clean_up"]
 
 [resource]
 script = ExtResource("1_catalog")
-Upgrades = Array[ExtResource("1_upgrade")]([ExtResource("2_comfy_shoes"), ExtResource("3_running_shoes"), ExtResource("4_warm_smile"), ExtResource("5_better_tap"), ExtResource("6_rapid_boil_element"), ExtResource("7_bigger_kettle"), ExtResource("8_family_kettle"), ExtResource("9_deep_clean"), ExtResource("10_revive_plant")])
+Upgrades = Array[ExtResource("1_upgrade")]([ExtResource("2_comfy_shoes"), ExtResource("3_running_shoes"), ExtResource("4_warm_smile"), ExtResource("5_better_tap"), ExtResource("6_rapid_boil_element"), ExtResource("7_bigger_kettle"), ExtResource("8_family_kettle"), ExtResource("9_clean_up")])
