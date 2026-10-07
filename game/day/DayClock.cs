@@ -28,6 +28,11 @@ public sealed class DayClock
 
     public bool IsOpen { get; private set; }
 
+    /// <summary>How many times faster than normal the clock runs. Back to 1 each morning.</summary>
+    public double Speed { get; private set; } = 1;
+
+    public bool IsFastForwarding => Speed > 1;
+
     /// <summary>How far through the day it is, from 0 at opening to 1 at closing.</summary>
     public double Progress => Math.Clamp(_elapsedSeconds / _dayLengthSeconds, 0, 1);
 
@@ -40,7 +45,19 @@ public sealed class DayClock
     public void Open()
     {
         _elapsedSeconds = 0;
+        Speed = 1;
         IsOpen = true;
+    }
+
+    /// <summary>Run the rest of the day faster, e.g. once there's nobody left to serve.</summary>
+    public void FastForward(double speed)
+    {
+        if (speed < 1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(speed), speed, "Fast-forwarding can't slow the clock down.");
+        }
+
+        Speed = speed;
     }
 
     public void Tick(double deltaSeconds)
@@ -50,7 +67,7 @@ public sealed class DayClock
             return;
         }
 
-        _elapsedSeconds += deltaSeconds;
+        _elapsedSeconds += deltaSeconds * Speed;
 
         if (_elapsedSeconds >= _dayLengthSeconds)
         {

@@ -23,7 +23,7 @@ public partial class DaySummary : PanelContainer
     {
         TitleLabel.Text = $"Day {stats.DayNumber} is over!";
         StatsLabel.Text =
-            $"Customers served: {stats.CustomersServed}\n" +
+            $"Customers served: {stats.CustomersServed} of {stats.CustomersExpected}\n" +
             $"Customers lost: {stats.CustomersLost}\n" +
             $"Earnings: $ {stats.Earnings}";
         Reopen();

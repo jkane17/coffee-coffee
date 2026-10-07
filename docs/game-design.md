@@ -16,6 +16,7 @@ Continuing a save skips the intro. The dialogue lives in `resources/dialogue/`.
 2. Each customer thinks for a moment, then shows a "ready" bubble.
 3. The player clicks any ready customer to take their order, makes the drink at the brew counter, and serves it to any customer who ordered that drink.
 4. Patience only runs once a customer is ready to order, and gets a small boost when their order is taken. Customers who run out leave without paying.
+5. At closing time the last customers are served, the day's results are shown, and progress is saved.
 
 ## Making instant coffee
 Each step is a click on a brew counter station; the barista walks over and does it.
@@ -30,7 +31,9 @@ Each step is a click on a brew counter station; the barista walks over and does 
 | Pour hot water | Kettle base | Kettle boiled, holding a cup of granules |
 
 The starting kettle only holds one cup, so every coffee needs a fresh fill and boil. Bigger kettles are Equipment upgrades. A cup of granules or an unwanted drink can be tipped out at the sink.
-5. At closing time the last customers are served, the day's results are shown, and progress is saved.
+
+## Difficulty
+Each day brings more customers: 4 on Day 1, then 2 more each day, up to 30. The gap between arrivals is the day length shared out between them (about 30 s on Day 1), but never less than 4 s on average, and each gap varies by ±30%. If every spot at the counter is full, the next customer waits and arrives later. Once everyone due that day has been served or given up, the clock runs 10× faster to closing time (the clock shows `>>`). The summary shows how many of the day's customers were served. All of these numbers are on the Shop's *Customers per day* exports.
 
 ## Progression
 Money earned is spent between days on the upgrades page, opened from the end-of-day summary. Each upgrade is bought once; tiers chain with *Requires* (comfy shoes → running shoes). Bonuses from upgrades with the same effect add up. The upgrades live in `resources/upgrades/`, listed in `catalog.tres`.
@@ -65,7 +68,7 @@ Longer-term categories:
 - A brew counter against the barista's back (left) wall holds a sink, the kettle on its base, a jar of instant coffee and a stack of take-away cups.
 - The door is in the back wall, on the customers' side.
 - Menu: Instant Coffee only ($2). The kettle holds one cup.
-- Short queue (4) and a customer every ~5 s.
+- Short queue (4). Day 1 has 4 customers, spread across the day.
 
 ## Decor that tells the story
 Props in the starting store show it's inherited and a bit neglected. Several are meant to be improved by Decor upgrades:

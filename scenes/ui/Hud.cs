@@ -100,7 +100,8 @@ public partial class Hud : CanvasLayer
         // The time changes every frame, so poll it rather than listening for an event.
         if (_clock is not null)
         {
-            ClockLabel.Text = _clock.IsOpen ? FormatTime(_clock.TimeOfDay) : "Closed";
+            string time = _clock.IsFastForwarding ? $">> {FormatTime(_clock.TimeOfDay)}" : FormatTime(_clock.TimeOfDay);
+            ClockLabel.Text = _clock.IsOpen ? time : "Closed";
         }
     }
 

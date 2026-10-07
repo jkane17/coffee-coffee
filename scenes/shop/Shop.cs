@@ -58,6 +58,17 @@ public partial class Shop : Node2D
     /// values that upgrades improve on.</summary>
     [Export] public UpgradeCatalog UpgradeCatalog { get; set; } = null!;
 
+    [ExportGroup("Customers per day")]
+    [Export(PropertyHint.Range, "1,50,1")] public int FirstDayCustomers { get; set; } = 4;
+    [Export(PropertyHint.Range, "0,20,1")] public int ExtraCustomersPerDay { get; set; } = 2;
+    [Export(PropertyHint.Range, "1,200,1")] public int MaxCustomersPerDay { get; set; } = 30;
+    /// <summary>The gap between customers is the day length shared out between them, but never less than this on average.</summary>
+    [Export(PropertyHint.Range, "1,60,0.5,suffix:s")] public float MinSpawnSeconds { get; set; } = 4f;
+    /// <summary>How much each gap varies, e.g. 0.3 for ±30%.</summary>
+    [Export(PropertyHint.Range, "0,0.9,0.05")] public float SpawnJitter { get; set; } = 0.3f;
+    /// <summary>How much faster the clock runs once everyone due today has been and gone.</summary>
+    [Export(PropertyHint.Range, "1,50,1,suffix:x")] public float FastForwardSpeed { get; set; } = 10f;
+
     [ExportGroup("Day")]
     [Export(PropertyHint.Range, "10,600,5,suffix:s")] public float DayLengthSeconds { get; set; } = 120f;
     [Export(PropertyHint.Range, "0,23,1")] public int OpenHour { get; set; } = 8;
@@ -68,7 +79,8 @@ public partial class Shop : Node2D
 
     /// <summary>What each brew counter station does when clicked, keyed by its click area. Built in _Ready.</summary>
     private readonly Dictionary<Area2D, StationActions> _stations = new();
-    private DayStats _today = new(0);
+    private DayStats _today = new(0, 0);
+    private CustomerSchedule? _schedule;
     private int _daysCompleted;
     private bool _isDayRunning;
     private Clickable? _highlighted;
@@ -115,6 +127,8 @@ public partial class Shop : Node2D
         _spots = new Customer?[MaxQueueLength];
         Clock = new DayClock(DayLengthSeconds, OpenHour, CloseHour);
         Clock.Closed += OnClosingTime;
+        // Restarted with a new wait after each customer, rather than repeating.
+        SpawnTimer.OneShot = true;
         SpawnTimer.Timeout += OnSpawnTimerTimeout;
 
         CoffeeBar = new CoffeeBar(new Kettle(KettleCapacityCups, KettleFillSeconds, KettleBoilSeconds), InstantCoffee);
@@ -231,13 +245,14 @@ public partial class Shop : Node2D
             return;
         }
 
+        int customers = CustomerSchedule.CustomersOnDay(NextDayNumber, FirstDayCustomers, ExtraCustomersPerDay, MaxCustomersPerDay);
+        _schedule = new CustomerSchedule(customers, DayLengthSeconds, MinSpawnSeconds, SpawnJitter);
         _isDayRunning = true;
-        _today = new DayStats(NextDayNumber);
+        _today = new DayStats(NextDayNumber, customers);
         Clock.Open();
-        SpawnTimer.Start();
         UpdateShopSign();
         SpawnCustomer();
-        GD.Print($"Day {_today.DayNumber}: the shop is open.");
+        GD.Print($"Day {_today.DayNumber}: the shop is open, expecting {customers} customers.");
     }
 
     /// <summary>Send the barista to whatever was clicked: a brew counter station, a customer (to take their order or serve them), or a spot on the floor.</summary>
@@ -467,7 +482,7 @@ public partial class Shop : Node2D
 
         CustomerServed?.Invoke(customer);
 
-        EndDayIfFinished();
+        CheckForEndOfDay();
     }
 
     private void OnClosingTime()
@@ -475,17 +490,28 @@ public partial class Shop : Node2D
         SpawnTimer.Stop();
         UpdateShopSign();
         GD.Print("Closing time. Serving the last customers in line.");
-        EndDayIfFinished();
+        CheckForEndOfDay();
     }
 
-    /// <summary>The day ends once the shop is closed and nobody is left waiting.</summary>
-    private void EndDayIfFinished()
+    /// <summary>The day ends once the shop is closed and nobody is left waiting. Before that, once everyone due today
+    /// has arrived and been dealt with, the clock speeds up so the player isn't left waiting for closing time.</summary>
+    private void CheckForEndOfDay()
     {
-        if (_isDayRunning && !Clock.IsOpen && CountWaitingCustomers() == 0)
+        if (!_isDayRunning || CountWaitingCustomers() > 0)
+        {
+            return;
+        }
+
+        if (!Clock.IsOpen)
         {
             _isDayRunning = false;
             _daysCompleted = _today.DayNumber;
             DayEnded?.Invoke(_today);
+        }
+        else if (_schedule is { AllArrived: true } && !Clock.IsFastForwarding)
+        {
+            Clock.FastForward(FastForwardSpeed);
+            GD.Print("Everyone's been and gone. Fast-forwarding to closing time.");
         }
     }
 
@@ -494,10 +520,24 @@ public partial class Shop : Node2D
         SpawnCustomer();
     }
 
-    /// <summary>Send a new customer in to the first free spot at the counter. Does nothing if every spot is taken.</summary>
+    /// <summary>Send the next of today's customers in to a free spot at the counter, then wait for the one after.
+    /// If every spot is taken, they don't come in and count as still to arrive.</summary>
     private void SpawnCustomer()
     {
-        AdmitCustomer();
+        if (_schedule is null || _schedule.AllArrived || !Clock.IsOpen)
+        {
+            return;
+        }
+
+        if (AdmitCustomer() is not null)
+        {
+            _schedule.RecordArrival();
+        }
+
+        if (!_schedule.AllArrived)
+        {
+            SpawnTimer.Start(_schedule.NextIntervalSeconds(Random.Shared));
+        }
     }
 
     /// <summary>Take the coffee things out of the boxes, popping each station into place one after another.</summary>
@@ -530,7 +570,7 @@ public partial class Shop : Node2D
         _today.RecordLostCustomer();
         GD.Print($"A customer gave up waiting ({CountWaitingCustomers()} still waiting).");
 
-        EndDayIfFinished();
+        CheckForEndOfDay();
     }
 
     private void FreeSpotOf(Customer customer)

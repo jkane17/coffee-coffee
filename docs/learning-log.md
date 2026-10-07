@@ -151,3 +151,6 @@ Godot concepts covered so far, so they don't get re-explained. Claude appends to
 - **TabContainer**: shows one child at a time, with a tab per child titled with the child's name. Used in: `scenes/ui/upgrades_page.tscn`
 - **ScrollContainer**: scrolls a single child that's bigger than itself. Give the child Expand in its horizontal Container Sizing so it fills the width. Used in: `upgrades_page.tscn`
 - **UI built from a scene**: a small row scene (`upgrade_row.tscn`) is instanced once per item into a Container, which lays the rows out. Used in: `scenes/ui/UpgradesPage.cs`
+
+## Difficulty curve (step 22)
+- **One-shot Timer with a new wait each time**: set `OneShot`, then call `Start(seconds)` to wait a different time for each run, e.g. a random gap between customers. A one-shot timer stops after it fires instead of repeating. Used in: `scenes/shop/Shop.cs`
