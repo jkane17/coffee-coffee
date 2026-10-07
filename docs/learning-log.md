@@ -136,3 +136,18 @@ Godot concepts covered so far, so they don't get re-explained. Claude appends to
 - **GuiGetHoveredControl**: `GetViewport().GuiGetHoveredControl()` says which Control is under the mouse, so world hover effects can stand down behind UI. Used in: `Shop.cs`
 - **Tween sequences**: steps run one after another by default; `TweenInterval` waits and `TweenCallback(Callable.From(...))` runs code at the end. Fading `Modulate` to transparent fades a node and its children. Used in: `scenes/ui/Hud.cs` (day banner)
 - **TreeExited**: every Node raises it when leaving the scene tree, including when it frees itself, so another node can wait for it to be gone. Unsubscribe in `_ExitTree` in case both are freed together. Used in: `scenes/intro/Intro.cs`
+
+## Resolution and scaling
+- **Base resolution**: *Display → Window → Size → Viewport Width/Height* (1152×648, Godot's default, 16:9) is the design coordinate space. Scene positions are in these units whatever the real window size, so choose it early. Used in: `project.godot`
+- **Stretch Mode**: `canvas_items` draws at the real window resolution and scales 2D content, keeping text and vector art sharp. `viewport` draws at base size and scales the finished image (pixel art). `disabled` doesn't scale, so bigger windows show more world. Used in: `project.godot` (`canvas_items`)
+- **Stretch Aspect**: decides what happens on screens that aren't 16:9. `expand` shows extra world past the base rectangle (below on 16:10/4:3, to the right on ultrawide), `keep` letterboxes with black bars, and `keep_width`/`keep_height` expand in one direction only. Anchored UI follows the real screen edges. Used in: `project.godot` (`expand`)
+- **SVG import scale**: SVGs are rasterised at import, so they can look soft when scaled up on large screens. Raise *Scale* in the Import dock and Reimport for a sharper bitmap, then shrink the sprite's Scale to keep its size. Used in: `assets/art/`
+- **Testing other screens**: resize the running window, or set *Display → Window → Size → Window Width/Height Override* temporarily.
+
+## Upgrades page (step 21)
+- **Exported enums**: an `[Export]` of a C# enum shows as a dropdown in the Inspector and is saved as its number in `.tres` files, so only add new values at the end. Used in: `game/upgrades/Upgrade.cs`
+- **Resources referencing resources**: an `[Export]` of a Resource type (`Upgrade? Requires`) points at another `.tres`, e.g. running shoes needing comfy shoes. Used in: `resources/upgrades/`
+- **Groups**: a named tag on nodes. `AddToGroup` (or the Node → Groups tab) adds a node, and `GetTree().GetNodesInGroup(name)` finds every node in it, wherever they are in the tree. Used in: `scenes/common/UpgradeVisibility.cs`, `Shop.cs`
+- **TabContainer**: shows one child at a time, with a tab per child titled with the child's name. Used in: `scenes/ui/upgrades_page.tscn`
+- **ScrollContainer**: scrolls a single child that's bigger than itself. Give the child Expand in its horizontal Container Sizing so it fills the width. Used in: `upgrades_page.tscn`
+- **UI built from a scene**: a small row scene (`upgrade_row.tscn`) is instanced once per item into a Container, which lays the rows out. Used in: `scenes/ui/UpgradesPage.cs`

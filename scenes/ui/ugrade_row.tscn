@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://cgkam2i2kxlfo"]
+
+[ext_resource type="Script" uid="uid://bvgrqiqxihhse" path="res://scenes/ui/UpgradeRow.cs" id="1_57imb"]
+
+[node name="UgradeRow" type="PanelContainer" unique_id=279881338 node_paths=PackedStringArray("NameLabel", "DescriptionLabel", "BuyButton")]
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_57imb")
+NameLabel = NodePath("Content/Text/NameLabel")
+DescriptionLabel = NodePath("Content/Text/DescriptionLabel")
+BuyButton = NodePath("Content/BuyButton")
+
+[node name="Content" type="HBoxContainer" parent="." unique_id=58941460]
+layout_mode = 2
+
+[node name="Text" type="VBoxContainer" parent="Content" unique_id=598630481]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="NameLabel" type="Label" parent="Content/Text" unique_id=1742864335]
+layout_mode = 2
+
+[node name="DescriptionLabel" type="Label" parent="Content/Text" unique_id=1700251229]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+autowrap_mode = 2
+
+[node name="BuyButton" type="Button" parent="Content" unique_id=727961772]
+layout_mode = 2
+size_flags_vertical = 4

@@ -4,13 +4,15 @@
 [ext_resource type="Script" uid="uid://dklmml7gd3g74" path="res://scenes/ui/BrewStatus.cs" id="2_hqnrr"]
 [ext_resource type="Script" uid="uid://c5sv48geypkog" path="res://scenes/ui/DaySummary.cs" id="3_bo48s"]
 [ext_resource type="PackedScene" uid="uid://p0wln6j8tdwd" path="res://scenes/ui/dialogue_box.tscn" id="4_8qguk"]
+[ext_resource type="PackedScene" uid="uid://b28pr2qydt5u4" path="res://scenes/ui/upgrades_page.tscn" id="4_136eg"]
 
-[node name="Hud" type="CanvasLayer" unique_id=1516447156 node_paths=PackedStringArray("MoneyLabel", "ClockLabel", "BrewStatus", "DaySummary", "DialogueBox", "HintPanel", "HintLabel", "DayBanner")]
+[node name="Hud" type="CanvasLayer" unique_id=1516447156 node_paths=PackedStringArray("MoneyLabel", "ClockLabel", "BrewStatus", "DaySummary", "UpgradesPage", "DialogueBox", "HintPanel", "HintLabel", "DayBanner")]
 script = ExtResource("1_0mwgc")
 MoneyLabel = NodePath("MoneyLabel")
 ClockLabel = NodePath("ClockLabel")
 BrewStatus = NodePath("BrewStatus")
 DaySummary = NodePath("DaySummary")
+UpgradesPage = NodePath("UpgradesPage")
 DialogueBox = NodePath("DialogueBox")
 HintPanel = NodePath("HintPanel")
 HintLabel = NodePath("HintPanel/HintLabel")
@@ -26,6 +28,21 @@ theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 6
 theme_override_font_sizes/font_size = 32
 text = "$ 0"
+
+[node name="ClockLabel" type="Label" parent="." unique_id=319431061]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -98.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = 61.0
+grow_horizontal = 0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 32
+text = "08:00"
+horizontal_alignment = 2
 
 [node name="BrewStatus" type="VBoxContainer" parent="." unique_id=189333286 node_paths=PackedStringArray("StatusLabel", "BrewBar")]
 offset_left = 16.0
@@ -46,20 +63,7 @@ custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
 mouse_filter = 2
 
-[node name="ClockLabel" type="Label" parent="." unique_id=319431061]
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -82.0
-offset_bottom = 45.0
-grow_horizontal = 0
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 6
-theme_override_font_sizes/font_size = 32
-text = "08:00"
-horizontal_alignment = 2
-
-[node name="DaySummary" type="PanelContainer" parent="." unique_id=1618766529 node_paths=PackedStringArray("TitleLabel", "StatsLabel", "NextDayButton")]
+[node name="DaySummary" type="PanelContainer" parent="." unique_id=1618766529 node_paths=PackedStringArray("TitleLabel", "StatsLabel", "NextDayButton", "UpgradesButton")]
 custom_minimum_size = Vector2(320, 0)
 anchors_preset = 8
 anchor_left = 0.5
@@ -76,6 +80,7 @@ script = ExtResource("3_bo48s")
 TitleLabel = NodePath("Content/TitleLabel")
 StatsLabel = NodePath("Content/StatusLabel")
 NextDayButton = NodePath("Content/NextDayButton")
+UpgradesButton = NodePath("Content/UpgradesButton")
 
 [node name="Content" type="VBoxContainer" parent="DaySummary" unique_id=416769591]
 layout_mode = 2
@@ -90,9 +95,15 @@ text = "Day 1 is over!"
 layout_mode = 2
 text = "Customers served: 0"
 
+[node name="UpgradesButton" type="Button" parent="DaySummary/Content" unique_id=1286630765]
+layout_mode = 2
+text = "Upgrades"
+
 [node name="NextDayButton" type="Button" parent="DaySummary/Content" unique_id=900312782]
 layout_mode = 2
 text = "Next day"
+
+[node name="UpgradesPage" parent="." unique_id=999256908 instance=ExtResource("4_136eg")]
 
 [node name="DialogueBox" parent="." unique_id=89056549 instance=ExtResource("4_8qguk")]
 

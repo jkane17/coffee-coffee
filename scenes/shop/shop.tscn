@@ -11,6 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://ck47ys1lqrf05" path="res://assets/art/shop/floor_tile.svg" id="7_vk20h"]
 [ext_resource type="PackedScene" uid="uid://klsq871q5lpe" path="res://scenes/barista/barista.tscn" id="8_dww4p"]
 [ext_resource type="Texture2D" uid="uid://c0eq4635x8tch" path="res://assets/art/shop/brew_counter.svg" id="8_toxgp"]
+[ext_resource type="Resource" path="res://resources/upgrades/catalog.tres" id="9_4yy74"]
 [ext_resource type="Shader" uid="uid://b8m1171aqstb" path="res://scenes/common/outline.gdshader" id="10_131kw"]
 [ext_resource type="Texture2D" uid="uid://d3cnxaejlv6r2" path="res://assets/art/shop/sink.svg" id="10_bnu54"]
 [ext_resource type="Texture2D" uid="uid://c8caa41qua05f" path="res://assets/art/shop/door.svg" id="10_g6lcs"]
@@ -26,6 +27,10 @@
 [ext_resource type="Texture2D" uid="uid://lauemo3ddj6a" path="res://assets/art/decor/cardboard_boxes.svg" id="16_bnu54"]
 [ext_resource type="Texture2D" uid="uid://8kjdf5hac8pm" path="res://assets/art/decor/doormat.svg" id="17_noimi"]
 [ext_resource type="Texture2D" uid="uid://dq5sfawj01p87" path="res://assets/art/decor/open_sign.svg" id="18_f8gqx"]
+[ext_resource type="Script" uid="uid://dtwtm6d53c4w8" path="res://scenes/common/UpgradeVisibility.cs" id="24_njv4s"]
+[ext_resource type="Resource" path="res://resources/upgrades/deep_clean.tres" id="25_1wgjh"]
+[ext_resource type="Resource" path="res://resources/upgrades/revive_plant.tres" id="27_e1gfy"]
+[ext_resource type="Texture2D" uid="uid://co1kmdixweikb" path="res://assets/art/decor/healthy_plant.svg" id="30_p3vno"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_wjgtv"]
 shader = ExtResource("10_131kw")
@@ -129,6 +134,7 @@ ClosedSignTexture = ExtResource("6_cxrsv")
 EmptyCupTexture = ExtResource("5_f8gqx")
 GranulesCupTexture = ExtResource("6_wjgtv")
 QueueStart = NodePath("QueueStart")
+UpgradeCatalog = ExtResource("9_4yy74")
 
 [node name="Background" type="ColorRect" parent="." unique_id=1281561567]
 offset_right = 1152.0
@@ -234,9 +240,19 @@ centered = false
 flip_h = true
 flip_v = true
 
+[node name="HideAfterDeepClean" type="Node" parent="Decor/Cobweb" unique_id=1779624703]
+script = ExtResource("24_njv4s")
+Upgrade = ExtResource("25_1wgjh")
+VisibleWhenOwned = false
+
 [node name="WiltedPlant" type="Sprite2D" parent="Decor" unique_id=2044311130]
 position = Vector2(512, 151)
 texture = ExtResource("15_u2jek")
+
+[node name="Revive" type="Node" parent="Decor/WiltedPlant" unique_id=1403303426]
+script = ExtResource("24_njv4s")
+Upgrade = ExtResource("27_e1gfy")
+VisibleWhenOwned = false
 
 [node name="Boxes" type="Sprite2D" parent="Decor" unique_id=442579252]
 material = SubResource("ShaderMaterial_ncc2j")
@@ -258,6 +274,14 @@ texture = ExtResource("17_noimi")
 position = Vector2(622, 100)
 texture = ExtResource("18_f8gqx")
 
+[node name="HealthyPlant" type="Sprite2D" parent="Decor" unique_id=1980535142]
+position = Vector2(512, 151)
+texture = ExtResource("30_p3vno")
+
+[node name="Revive" type="Node" parent="Decor/HealthyPlant" unique_id=1539080976]
+script = ExtResource("24_njv4s")
+Upgrade = ExtResource("27_e1gfy")
+
 [node name="DoorSprite" type="Sprite2D" parent="." unique_id=221276468]
 position = Vector2(702, 112)
 texture = ExtResource("10_g6lcs")
@@ -266,15 +290,15 @@ texture = ExtResource("10_g6lcs")
 position = Vector2(702, 160)
 
 [node name="QueueStart" type="Marker2D" parent="." unique_id=2053379798]
-position = Vector2(624, 570)
+position = Vector2(608, 570)
 
 [node name="ServeSpot" type="Marker2D" parent="." unique_id=239140205]
 position = Vector2(502, 570)
 
 [node name="WorkArea" type="ReferenceRect" parent="." unique_id=1838124774]
-offset_left = 432.0
+offset_left = 446.0
 offset_top = 296.0
-offset_right = 528.0
+offset_right = 514.0
 offset_bottom = 588.0
 mouse_filter = 2
 

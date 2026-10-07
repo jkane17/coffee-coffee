@@ -28,4 +28,22 @@ public sealed class Till
         Balance += amount;
         BalanceChanged?.Invoke(Balance);
     }
+
+    public bool CanAfford(int amount) => amount <= Balance;
+
+    public void Spend(int amount)
+    {
+        if (amount <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(amount), amount, "Spending must be more than zero.");
+        }
+
+        if (!CanAfford(amount))
+        {
+            throw new InvalidOperationException($"Can't spend $ {amount} with only $ {Balance} in the till.");
+        }
+
+        Balance -= amount;
+        BalanceChanged?.Invoke(Balance);
+    }
 }

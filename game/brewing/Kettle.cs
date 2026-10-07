@@ -5,27 +5,43 @@ using System;
 public sealed class Kettle
 {
     private double _elapsedSeconds;
+    private int _capacityCups;
+    private double _fillSeconds;
+    private double _boilSeconds;
 
     public Kettle(int capacityCups, double fillSeconds, double boilSeconds)
     {
-        if (capacityCups < 1)
-        {
-            throw new ArgumentOutOfRangeException(nameof(capacityCups), capacityCups, "A kettle must hold at least one cup.");
-        }
-
-        if (fillSeconds <= 0 || boilSeconds <= 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(fillSeconds), "Filling and boiling must take longer than zero seconds.");
-        }
-
         CapacityCups = capacityCups;
         FillSeconds = fillSeconds;
         BoilSeconds = boilSeconds;
     }
 
-    public int CapacityCups { get; }
-    public double FillSeconds { get; }
-    public double BoilSeconds { get; }
+    /// <summary>Can change between days, e.g. from upgrades. A new capacity applies from the next fill.</summary>
+    public int CapacityCups
+    {
+        get => _capacityCups;
+        set
+        {
+            if (value < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(value), value, "A kettle must hold at least one cup.");
+            }
+
+            _capacityCups = value;
+        }
+    }
+
+    public double FillSeconds
+    {
+        get => _fillSeconds;
+        set => _fillSeconds = RequirePositive(value);
+    }
+
+    public double BoilSeconds
+    {
+        get => _boilSeconds;
+        set => _boilSeconds = RequirePositive(value);
+    }
 
     public KettleState State { get; private set; } = KettleState.Empty;
 
@@ -84,6 +100,16 @@ public sealed class Kettle
         {
             State = KettleState.Boiled;
         }
+    }
+
+    private static double RequirePositive(double seconds)
+    {
+        if (seconds <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(seconds), seconds, "Filling and boiling must take longer than zero seconds.");
+        }
+
+        return seconds;
     }
 
     private void Require(KettleState expected, string action)

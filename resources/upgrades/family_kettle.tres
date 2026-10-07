@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="Upgrade" format=3]
+
+[ext_resource type="Script" path="res://game/upgrades/Upgrade.cs" id="1_upgrade"]
+[ext_resource type="Resource" path="res://resources/upgrades/bigger_kettle.tres" id="2_requires"]
+
+[resource]
+script = ExtResource("1_upgrade")
+Id = "family_kettle"
+DisplayName = "Family Kettle"
+Description = "Holds 4 cups of water."
+Category = 1
+Cost = 50
+Requires = ExtResource("2_requires")
+Effect = 5
+Amount = 2

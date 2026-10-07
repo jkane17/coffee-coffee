@@ -1,0 +1,77 @@
+[gd_scene format=3 uid="uid://b28pr2qydt5u4"]
+
+[ext_resource type="Script" uid="uid://ddwc4fngdu6jl" path="res://scenes/ui/UpgradesPage.cs" id="1_uirg5"]
+[ext_resource type="PackedScene" uid="uid://cgkam2i2kxlfo" path="res://scenes/ui/ugrade_row.tscn" id="2_uegp6"]
+
+[node name="UpgradesPage" type="Control" unique_id=999256908 node_paths=PackedStringArray("BaristaList", "EquipmentList", "ShopList", "CloseButton")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_uirg5")
+RowScene = ExtResource("2_uegp6")
+BaristaList = NodePath("Panel/Content/Tabs/Barista/BaristaList")
+EquipmentList = NodePath("Panel/Content/Tabs/Equipment/EquipmentList")
+ShopList = NodePath("Panel/Content/Tabs/Shop/ShopList")
+CloseButton = NodePath("Panel/Content/CloseButton")
+
+[node name="Panel" type="PanelContainer" parent="." unique_id=1398757089]
+custom_minimum_size = Vector2(600, 440)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Content" type="VBoxContainer" parent="Panel" unique_id=837887848]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="Panel/Content" unique_id=830179345]
+layout_mode = 2
+text = "Upgrades"
+horizontal_alignment = 1
+
+[node name="Tabs" type="TabContainer" parent="Panel/Content" unique_id=122784502]
+layout_mode = 2
+size_flags_vertical = 3
+current_tab = 0
+
+[node name="Barista" type="ScrollContainer" parent="Panel/Content/Tabs" unique_id=880269264]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="BaristaList" type="VBoxContainer" parent="Panel/Content/Tabs/Barista" unique_id=1124573005]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Equipment" type="ScrollContainer" parent="Panel/Content/Tabs" unique_id=1472610059]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="EquipmentList" type="VBoxContainer" parent="Panel/Content/Tabs/Equipment" unique_id=1298730926]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Shop" type="ScrollContainer" parent="Panel/Content/Tabs" unique_id=647883160]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 2
+
+[node name="ShopList" type="VBoxContainer" parent="Panel/Content/Tabs/Shop" unique_id=142668098]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CloseButton" type="Button" parent="Panel/Content" unique_id=1104322605]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Done"

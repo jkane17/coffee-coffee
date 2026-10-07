@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="Upgrade" format=3]
+
+[ext_resource type="Script" path="res://game/upgrades/Upgrade.cs" id="1_upgrade"]
+[ext_resource type="Resource" path="res://resources/upgrades/comfy_shoes.tres" id="2_requires"]
+
+[resource]
+script = ExtResource("1_upgrade")
+Id = "running_shoes"
+DisplayName = "Running Shoes"
+Description = "Proper trainers. Walk another 25% faster."
+Category = 0
+Cost = 40
+Requires = ExtResource("2_requires")
+Effect = 1
+Amount = 25

@@ -99,6 +99,7 @@ shape = SubResource("RectangleShape2D_wvx66")
 
 [node name="Walker" type="Node" parent="." unique_id=1193825300 node_paths=PackedStringArray("AnimationPlayer")]
 script = ExtResource("8_lu5oa")
+Speed = 100.0
 AnimationPlayer = NodePath("../AnimationPlayer")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1834218239]

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="Upgrade" format=3 uid="uid://luhrfc4ad4wg"]
+
+[ext_resource type="Script" uid="uid://diltjdqwvutx2" path="res://game/upgrades/Upgrade.cs" id="1_upgrade"]
+
+[resource]
+script = ExtResource("1_upgrade")
+Id = "bigger_kettle"
+DisplayName = "Bigger Kettle"
+Description = "Holds 2 cups of water, so one boil makes two coffees."
+Category = 1
+Cost = 20
+Effect = 5
+Amount = 1

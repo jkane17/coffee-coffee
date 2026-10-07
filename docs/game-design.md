@@ -29,11 +29,27 @@ Each step is a click on a brew counter station; the barista walks over and does 
 | Add granules | Coffee jar | Holding an empty cup |
 | Pour hot water | Kettle base | Kettle boiled, holding a cup of granules |
 
-The starting kettle only holds one cup, so every coffee needs a fresh fill and boil. A bigger kettle is a planned Equipment upgrade. A cup of granules or an unwanted drink can be tipped out at the sink.
+The starting kettle only holds one cup, so every coffee needs a fresh fill and boil. Bigger kettles are Equipment upgrades. A cup of granules or an unwanted drink can be tipped out at the sink.
 5. At closing time the last customers are served, the day's results are shown, and progress is saved.
 
 ## Progression
-Money earned is spent between days on upgrades. Planned categories:
+Money earned is spent between days on the upgrades page, opened from the end-of-day summary. Each upgrade is bought once; tiers chain with *Requires* (comfy shoes → running shoes). Bonuses from upgrades with the same effect add up. The upgrades live in `resources/upgrades/`, listed in `catalog.tres`.
+
+| Tab | Upgrade | Cost | Effect |
+|---|---|---|---|
+| Barista | Comfy Shoes | $15 | Walk +25% |
+| Barista | Running Shoes (needs Comfy Shoes) | $40 | Walk +25% |
+| Barista | Warm Smile | $25 | Patience +20% |
+| Equipment | Better Tap | $15 | Kettle fills twice as fast |
+| Equipment | Rapid-Boil Element | $30 | Kettle boils 50% faster |
+| Equipment | Bigger Kettle | $20 | +1 cup (2 total) |
+| Equipment | Family Kettle (needs Bigger Kettle) | $50 | +2 cups (4 total) |
+| Shop | Deep Clean | $10 | Removes the cobweb; patience +5% |
+| Shop | Revive the Plant | $8 | Healthy plant; patience +5% |
+
+Still to come: coffee machines and new drinks (Equipment), tables, more decor and a bigger shop (Shop).
+
+Longer-term categories:
 
 | Category | Examples | Affects |
 |---|---|---|

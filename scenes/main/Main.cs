@@ -1,3 +1,4 @@
+using System.Linq;
 using Godot;
 
 /// <summary>Root of the game. Owns the top-level scenes, connects gameplay to UI so neither has to know about the other,
@@ -29,9 +30,11 @@ public partial class Main : Node
         Hud.ShowTill(Shop.Till);
         Hud.ShowKettle(Shop.CoffeeBar.Kettle);
         Hud.ShowClock(Shop.Clock);
+        Hud.ShowUpgrades(Shop.Upgrades);
 
         Shop.DayEnded += OnDayEnded;
         Hud.NextDayRequested += BeginDay;
+        Hud.UpgradePurchaseRequested += OnUpgradePurchaseRequested;
 
         if (_saveToContinue is null)
         {
@@ -59,7 +62,19 @@ public partial class Main : Node
 
     private void OnDayEnded(DayStats stats)
     {
-        _saveStore.Save(new SaveData(SaveData.CurrentVersion, Shop.Till.Balance, Shop.DaysCompleted));
+        SaveProgress();
         Hud.ShowDaySummary(stats);
+    }
+
+    /// <summary>Save straight after buying, so quitting before the next day doesn't lose the purchase.</summary>
+    private void OnUpgradePurchaseRequested(Upgrade upgrade)
+    {
+        Shop.BuyUpgrade(upgrade);
+        SaveProgress();
+    }
+
+    private void SaveProgress()
+    {
+        _saveStore.Save(new SaveData(SaveData.CurrentVersion, Shop.Till.Balance, Shop.DaysCompleted, Shop.Upgrades.OwnedIds.ToArray()));
     }
 }

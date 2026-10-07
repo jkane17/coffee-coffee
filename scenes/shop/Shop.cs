@@ -53,6 +53,11 @@ public partial class Shop : Node2D
     [Export(PropertyHint.Range, "1,20,1")] public int MaxQueueLength { get; set; } = 4;
     [Export] public float QueueSpacing { get; set; } = 60f;
 
+    [ExportGroup("Upgrades")]
+    /// <summary>Everything that can be bought between days. The Brew counter's kettle values and the barista's walk speed are the starting
+    /// values that upgrades improve on.</summary>
+    [Export] public UpgradeCatalog UpgradeCatalog { get; set; } = null!;
+
     [ExportGroup("Day")]
     [Export(PropertyHint.Range, "10,600,5,suffix:s")] public float DayLengthSeconds { get; set; } = 120f;
     [Export(PropertyHint.Range, "0,23,1")] public int OpenHour { get; set; } = 8;
@@ -68,12 +73,16 @@ public partial class Shop : Node2D
     private bool _isDayRunning;
     private Clickable? _highlighted;
     private bool _isPacked;
+    private float _baseWalkSpeed;
 
     /// <summary>The shop's money. Exposed so UI can observe it. Replaced by <see cref="RestoreProgress"/>.</summary>
     public Till Till { get; private set; } = new();
 
     /// <summary>The coffee-making stations and what the barista is carrying. Created in _Ready; exposed so UI can observe the kettle.</summary>
     public CoffeeBar CoffeeBar { get; private set; } = null!;
+
+    /// <summary>The upgrades the shop owns. Created in _Ready; exposed so UI can list them.</summary>
+    public UpgradeBook Upgrades { get; private set; } = null!;
 
     /// <summary>Opening hours for the current day. Created in _Ready from the Day exports.</summary>
     public DayClock Clock { get; private set; } = null!;
@@ -116,6 +125,12 @@ public partial class Shop : Node2D
         _stations[CupStackArea] = new StationActions(() => !_isPacked && CoffeeBar.CanUseCupStack, CoffeeBar.UseCupStack);
         _stations[GranulesArea] = new StationActions(() => !_isPacked && CoffeeBar.CanUseGranules, CoffeeBar.UseGranules);
         _stations[BoxesArea] = new StationActions(() => _isPacked, Unpack);
+
+        _baseWalkSpeed = Barista.Walker.Speed;
+        Upgrades = new UpgradeBook(UpgradeCatalog.Upgrades);
+        Upgrades.Changed += ApplyUpgrades;
+        ApplyUpgrades();
+
         UpdateHeldItem();
         UpdateShopSign();
     }
@@ -146,6 +161,7 @@ public partial class Shop : Node2D
 
         Till = new Till(save.Money);
         _daysCompleted = save.DaysCompleted;
+        Upgrades.Restore(save.OwnedUpgrades ?? Array.Empty<string>());
         UpdateShopSign();
     }
 
@@ -170,6 +186,9 @@ public partial class Shop : Node2D
         }
 
         Customer customer = CustomerScene.Instantiate<Customer>();
+        float patience = PercentBonus(UpgradeEffect.PatiencePercent);
+        customer.MinPatienceSeconds *= patience;
+        customer.MaxPatienceSeconds *= patience;
         setUp?.Invoke(customer);
         AddChild(customer);
         customer.GlobalPosition = Door.GlobalPosition;
@@ -182,6 +201,25 @@ public partial class Shop : Node2D
         customer.WalkTo(GetSpotPosition(spot));
         _spots[spot] = customer;
         return customer;
+    }
+
+    /// <summary>Whether the upgrade can be bought now: between days, not owned yet, unlocked and affordable.</summary>
+    public bool CanBuy(Upgrade upgrade)
+    {
+        return !_isDayRunning && !Upgrades.IsOwned(upgrade) && Upgrades.IsUnlocked(upgrade) && Till.CanAfford(upgrade.Cost);
+    }
+
+    /// <summary>Pay for an upgrade from the till and put it to use straight away.</summary>
+    public void BuyUpgrade(Upgrade upgrade)
+    {
+        if (!CanBuy(upgrade))
+        {
+            GD.PushWarning($"Can't buy {upgrade.DisplayName} right now.");
+            return;
+        }
+
+        Till.Spend(upgrade.Cost);
+        Upgrades.Add(upgrade);
     }
 
     /// <summary>Open the shop for a new day.</summary>
@@ -236,6 +274,32 @@ public partial class Shop : Node2D
         {
             Barista.WalkTo(ClampToWorkArea(globalPoint));
         }
+    }
+
+    /// <summary>Set everything upgrades affect from the starting values plus what's owned. Customers already in the shop keep their patience.</summary>
+    private void ApplyUpgrades()
+    {
+        Barista.Walker.Speed = _baseWalkSpeed * PercentBonus(UpgradeEffect.WalkSpeedPercent);
+
+        Kettle kettle = CoffeeBar.Kettle;
+        kettle.CapacityCups = KettleCapacityCups + Upgrades.Total(UpgradeEffect.ExtraKettleCups);
+        // Twice the speed (+100%) means half the time.
+        kettle.FillSeconds = KettleFillSeconds / PercentBonus(UpgradeEffect.FillSpeedPercent);
+        kettle.BoilSeconds = KettleBoilSeconds / PercentBonus(UpgradeEffect.BoilSpeedPercent);
+
+        foreach (Node node in GetTree().GetNodesInGroup(UpgradeVisibility.GroupName))
+        {
+            if (node is UpgradeVisibility visibility)
+            {
+                visibility.Refresh(Upgrades);
+            }
+        }
+    }
+
+    /// <summary>The owned bonus for a percentage effect as a multiplier, e.g. +25% is 1.25.</summary>
+    private float PercentBonus(UpgradeEffect effect)
+    {
+        return 1f + Upgrades.Total(effect) / 100f;
     }
 
     /// <summary>Where the barista stands to use a station: just to its right, inside the work area.</summary>

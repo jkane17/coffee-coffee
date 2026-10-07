@@ -10,6 +10,7 @@ public partial class Hud : CanvasLayer
     [Export] public Label ClockLabel { get; set; } = null!;
     [Export] public BrewStatus BrewStatus { get; set; } = null!;
     [Export] public DaySummary DaySummary { get; set; } = null!;
+    [Export] public UpgradesPage UpgradesPage { get; set; } = null!;
     [Export] public DialogueBox DialogueBox { get; set; } = null!;
     /// <summary>Shown with <see cref="ShowHint"/>; hidden when there's no hint.</summary>
     [Export] public Control HintPanel { get; set; } = null!;
@@ -23,13 +24,20 @@ public partial class Hud : CanvasLayer
 
     private Till? _till;
     private DayClock? _clock;
+    private UpgradeBook? _upgrades;
 
     /// <summary>Raised when the player asks to start the next day from the summary panel.</summary>
     public event Action? NextDayRequested;
 
+    /// <summary>Raised when the player tries to buy an upgrade on the upgrades page.</summary>
+    public event Action<Upgrade>? UpgradePurchaseRequested;
+
     public override void _Ready()
     {
         DaySummary.NextDayPressed += OnNextDayPressed;
+        DaySummary.UpgradesPressed += OnUpgradesPressed;
+        UpgradesPage.PurchaseRequested += OnUpgradePurchaseRequested;
+        UpgradesPage.Closed += DaySummary.Reopen;
         ShowHint(null);
         DayBanner.Visible = false;
     }
@@ -71,6 +79,9 @@ public partial class Hud : CanvasLayer
     public void ShowKettle(Kettle kettle) => BrewStatus.ShowKettle(kettle);
 
     public void ShowDaySummary(DayStats stats) => DaySummary.ShowSummary(stats);
+
+    /// <summary>The upgrades listed on the upgrades page, opened from the day summary.</summary>
+    public void ShowUpgrades(UpgradeBook upgrades) => _upgrades = upgrades;
 
     /// <summary>Start displaying the given clock's time of day.</summary>
     public void ShowClock(DayClock clock) => _clock = clock;
@@ -123,5 +134,22 @@ public partial class Hud : CanvasLayer
     private void OnNextDayPressed()
     {
         NextDayRequested?.Invoke();
+    }
+
+    private void OnUpgradesPressed()
+    {
+        if (_upgrades is null || _till is null)
+        {
+            GD.PushError("The upgrades page needs ShowUpgrades and ShowTill to be called first.");
+            DaySummary.Reopen();
+            return;
+        }
+
+        UpgradesPage.Open(_upgrades, _till);
+    }
+
+    private void OnUpgradePurchaseRequested(Upgrade upgrade)
+    {
+        UpgradePurchaseRequested?.Invoke(upgrade);
     }
 }
