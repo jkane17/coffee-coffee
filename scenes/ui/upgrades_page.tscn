@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://b28pr2qydt5u4"]
 
 [ext_resource type="Script" uid="uid://ddwc4fngdu6jl" path="res://scenes/ui/UpgradesPage.cs" id="1_uirg5"]
-[ext_resource type="PackedScene" uid="uid://cgkam2i2kxlfo" path="res://scenes/ui/ugrade_row.tscn" id="2_uegp6"]
+[ext_resource type="PackedScene" uid="uid://cgkam2i2kxlfo" path="res://scenes/ui/upgrade_row.tscn" id="2_uegp6"]
 
 [node name="UpgradesPage" type="Control" unique_id=999256908 node_paths=PackedStringArray("BaristaList", "EquipmentList", "ShopList", "CloseButton")]
 layout_mode = 3
