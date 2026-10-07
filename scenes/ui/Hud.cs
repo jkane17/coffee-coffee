@@ -127,9 +127,9 @@ public partial class Hud : CanvasLayer
         }
     }
 
-    private void OnBalanceChanged(int balance)
+    private void OnBalanceChanged(Money balance)
     {
-        MoneyLabel.Text = $"$ {balance}";
+        MoneyLabel.Text = balance.ToString();
     }
 
     private void OnNextDayPressed()

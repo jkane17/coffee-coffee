@@ -94,7 +94,7 @@ public partial class UpgradesPage : Control
         }
     }
 
-    private void OnBalanceChanged(int balance) => Refresh();
+    private void OnBalanceChanged(Money balance) => Refresh();
 
     private void OnBuyPressed(Upgrade upgrade)
     {

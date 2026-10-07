@@ -12,12 +12,15 @@ public sealed class DayStats
     public int CustomersExpected { get; }
     public int CustomersServed { get; private set; }
     public int CustomersLost { get; private set; }
-    public int Earnings { get; private set; }
+    /// <summary>Everything taken, tips included.</summary>
+    public Money Earnings { get; private set; }
+    public Money Tips { get; private set; }
 
-    public void RecordSale(int price)
+    public void RecordSale(Money price, Money tip)
     {
         CustomersServed++;
-        Earnings += price;
+        Earnings += price + tip;
+        Tips += tip;
     }
 
     public void RecordLostCustomer()

@@ -43,6 +43,14 @@ public partial class Shop : Node2D
     [Export] public Texture2D OpenSignTexture { get; set; } = null!;
     [Export] public Texture2D ClosedSignTexture { get; set; } = null!;
 
+    [ExportGroup("Tips")]
+    /// <summary>Customers start tipping on this day, once Aunt Bea has brought the tip jar.</summary>
+    [Export(PropertyHint.Range, "1,30,1")] public int TipsFromDay { get; set; } = 2;
+    /// <summary>On the service counter. Hidden until tips are enabled.</summary>
+    [Export] public Sprite2D TipJar { get; set; } = null!;
+    /// <summary>The tip from a customer served with full patience, as a percentage of their drink's price.</summary>
+    [Export(PropertyHint.Range, "0,200,5,suffix:%")] public int MaxTipPercent { get; set; } = 50;
+
     [ExportGroup("Held item art")]
     [Export] public Texture2D EmptyCupTexture { get; set; } = null!;
     [Export] public Texture2D GranulesCupTexture { get; set; } = null!;
@@ -86,6 +94,7 @@ public partial class Shop : Node2D
     private Clickable? _highlighted;
     private bool _isPacked;
     private float _baseWalkSpeed;
+    private bool _areTipsEnabled;
 
     /// <summary>The shop's money. Exposed so UI can observe it. Replaced by <see cref="RestoreProgress"/>.</summary>
     public Till Till { get; private set; } = new();
@@ -107,6 +116,9 @@ public partial class Shop : Node2D
 
     /// <summary>Where customers come in and leave.</summary>
     public Vector2 ExitPosition => Door.GlobalPosition;
+
+    /// <summary>Whether served customers leave tips. Turned on by <see cref="EnableTips"/>.</summary>
+    public bool AreTipsEnabled => _areTipsEnabled;
 
     /// <summary>Raised once the shop has closed and the last customer has left the line.</summary>
     public event Action<DayStats>? DayEnded;
@@ -145,6 +157,7 @@ public partial class Shop : Node2D
         Upgrades.Changed += ApplyUpgrades;
         ApplyUpgrades();
 
+        TipJar.Visible = false;
         UpdateHeldItem();
         UpdateShopSign();
     }
@@ -173,9 +186,16 @@ public partial class Shop : Node2D
             throw new InvalidOperationException("Progress can only be restored before the first day starts.");
         }
 
-        Till = new Till(save.Money);
+        Till = new Till(new Money(save.Money));
         _daysCompleted = save.DaysCompleted;
         Upgrades.Restore(save.OwnedUpgrades ?? Array.Empty<string>());
+        // A save is only made at the end of a day, so if that day had tips, the jar was already given.
+        if (_daysCompleted >= TipsFromDay)
+        {
+            _areTipsEnabled = true;
+            TipJar.Visible = true;
+        }
+
         UpdateShopSign();
     }
 
@@ -234,6 +254,18 @@ public partial class Shop : Node2D
 
         Till.Spend(upgrade.Cost);
         Upgrades.Add(upgrade);
+    }
+
+    /// <summary>Put the tip jar on the counter with a little pop, and have served customers tip from now on.</summary>
+    public void EnableTips()
+    {
+        _areTipsEnabled = true;
+        Vector2 fullScale = TipJar.Scale;
+        TipJar.Scale = Vector2.Zero;
+        TipJar.Visible = true;
+        CreateTween().TweenProperty(TipJar, Node2D.PropertyName.Scale.ToString(), fullScale, 0.35)
+            .SetTrans(Tween.TransitionType.Back)
+            .SetEase(Tween.EaseType.Out);
     }
 
     /// <summary>Open the shop for a new day.</summary>
@@ -464,6 +496,9 @@ public partial class Shop : Node2D
             return;
         }
 
+        // Worked out before handing over the drink, while their patience still shows how long they waited.
+        Money tip = _areTipsEnabled && !customer.HasUnlimitedPatience ? Tips.For(customer.Order!.Price, customer.PatienceLeft, MaxTipPercent / 100.0) : Money.Zero;
+
         DrinkRecipe drink = CoffeeBar.HandOverDrink();
         FreeSpotOf(customer);
         customer.ReceiveDrink();
@@ -475,9 +510,11 @@ public partial class Shop : Node2D
         // Outside opening hours (the intro), drinks are on the house.
         if (_isDayRunning)
         {
-            Till.AddSale(drink.Price);
-            _today.RecordSale(drink.Price);
-            GD.Print($"Served a {drink.DisplayName} for $ {drink.Price}.");
+            Till.AddSale(drink.Price + tip);
+            _today.RecordSale(drink.Price, tip);
+            customer.ShowPayment(drink.Price + tip);
+
+            GD.Print($"Served a {drink.DisplayName} for {drink.Price}, plus a {tip} tip.");
         }
 
         CustomerServed?.Invoke(customer);

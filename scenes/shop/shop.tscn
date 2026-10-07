@@ -31,6 +31,7 @@
 [ext_resource type="Texture2D" path="res://assets/art/decor/clean_window.svg" id="32_cleanwindow"]
 [ext_resource type="Texture2D" path="res://assets/art/decor/wall_stain.svg" id="33_wallstain"]
 [ext_resource type="Texture2D" path="res://assets/art/decor/floor_stain.svg" id="34_floorstain"]
+[ext_resource type="Texture2D" path="res://assets/art/decor/tip_jar.svg" id="35_tipjar"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_wjgtv"]
 shader = ExtResource("10_131kw")
@@ -111,7 +112,7 @@ shader_parameter/width = 2.0
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_a1v00"]
 size = Vector2(72, 64)
 
-[node name="Shop" type="Node2D" unique_id=1744938923 node_paths=PackedStringArray("Door", "SpawnTimer", "Barista", "ServeSpot", "WorkArea", "KettleArea", "SinkArea", "CupStackArea", "GranulesArea", "BoxesArea", "PackedStations", "KettleOnBase", "ShopSign", "QueueStart")]
+[node name="Shop" type="Node2D" unique_id=1744938923 node_paths=PackedStringArray("Door", "SpawnTimer", "Barista", "ServeSpot", "WorkArea", "KettleArea", "SinkArea", "CupStackArea", "GranulesArea", "BoxesArea", "PackedStations", "KettleOnBase", "ShopSign", "TipJar", "QueueStart")]
 script = ExtResource("1_100s2")
 CustomerScene = ExtResource("2_qaxay")
 Door = NodePath("Door")
@@ -131,6 +132,7 @@ InstantCoffee = ExtResource("4_dww4p")
 ShopSign = NodePath("Decor/ShopSign")
 OpenSignTexture = ExtResource("18_f8gqx")
 ClosedSignTexture = ExtResource("6_cxrsv")
+TipJar = NodePath("Decor/TipJar")
 EmptyCupTexture = ExtResource("5_f8gqx")
 GranulesCupTexture = ExtResource("6_wjgtv")
 QueueStart = NodePath("QueueStart")
@@ -293,6 +295,10 @@ texture = ExtResource("17_noimi")
 [node name="ShopSign" type="Sprite2D" parent="Decor" unique_id=1577757508]
 position = Vector2(622, 100)
 texture = ExtResource("18_f8gqx")
+
+[node name="TipJar" type="Sprite2D" parent="Decor"]
+position = Vector2(552, 318)
+texture = ExtResource("35_tipjar")
 
 [node name="DoorSprite" type="Sprite2D" parent="." unique_id=221276468]
 position = Vector2(702, 112)

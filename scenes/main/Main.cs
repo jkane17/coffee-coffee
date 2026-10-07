@@ -9,6 +9,8 @@ public partial class Main : Node
     [Export] public Hud Hud { get; set; } = null!;
     /// <summary>Plays on a new game, before Day 1.</summary>
     [Export] public Intro Intro { get; set; } = null!;
+    /// <summary>Plays before the first day with tips.</summary>
+    [Export] public TipJarVisit TipJarVisit { get; set; } = null!;
 
     private readonly SaveStore _saveStore = new();
     private SaveData? _saveToContinue;
@@ -48,8 +50,19 @@ public partial class Main : Node
         }
     }
 
-    /// <summary>Announce the next day with a banner, then open the shop once it's gone.</summary>
+    /// <summary>Play any story visit due before the next day, then announce the day with a banner and open the shop once it's gone.</summary>
     private void BeginDay()
+    {
+        if (!Shop.AreTipsEnabled && Shop.NextDayNumber >= Shop.TipsFromDay)
+        {
+            TipJarVisit.Play(Shop, Hud, ShowDayBanner);
+            return;
+        }
+
+        ShowDayBanner();
+    }
+
+    private void ShowDayBanner()
     {
         Hud.ShowDayBanner(Shop.NextDayNumber, OpenShop);
     }
@@ -75,6 +88,6 @@ public partial class Main : Node
 
     private void SaveProgress()
     {
-        _saveStore.Save(new SaveData(SaveData.CurrentVersion, Shop.Till.Balance, Shop.DaysCompleted, Shop.Upgrades.OwnedIds.ToArray()));
+        _saveStore.Save(new SaveData(SaveData.CurrentVersion, Shop.Till.Balance.Cents, Shop.DaysCompleted, Shop.Upgrades.OwnedIds.ToArray()));
     }
 }

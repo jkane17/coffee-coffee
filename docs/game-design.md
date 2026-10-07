@@ -11,6 +11,15 @@ The player inherits a small, empty store. All that was left behind is a kettle, 
 
 Continuing a save skips the intro. The dialogue lives in `resources/dialogue/`.
 
+## Aunt Bea's second visit (before Day 2)
+When the player starts Day 2, Aunt Bea comes back to ask how the first day went and brings a tip jar, which pops onto the service counter. She explains tipping and, unless the player has already bought **Clean the Place Up**, suggests cleaning the place up because customers are more patient (and so tip more) in a clean shop. Then she leaves and the Day 2 banner shows. If the player quits during the visit, it plays again next time. The tip jar is on the counter from then on.
+
+## Money and tips
+- Money is kept in whole cents and shown as dollars and cents, e.g. `$ 2.00`. Drink prices and upgrade costs are set in dollars in steps of 5 cents.
+- From Day 2, each served customer tips up to 50% of the drink's price, scaled by how much patience they had left (full patience means a $ 2.00 drink earns $ 3.00 in all; no patience left means no tip). The 50% is the Shop's *Max Tip Percent*. Tips are rounded to the nearest 5 cents, so balances are always multiples of 5 cents.
+- What each customer paid, tip included (e.g. "$ 2.45"), floats up over them when they're served, and the day summary shows how much of the earnings came from tips.
+- Customers with unlimited patience (Aunt Bea) never tip.
+
 ## Core loop (per day)
 1. Customers come in through the door in the back wall and take a free spot along the service counter while the shop is open.
 2. Each customer thinks for a moment, then shows a "ready" bubble.
@@ -66,7 +75,7 @@ Longer-term categories:
 - A worn service counter runs up the middle of the room from the front: customers on the right, the barista on the left.
 - A brew counter against the barista's back (left) wall holds a sink, the kettle on its base, a jar of instant coffee and a stack of take-away cups.
 - The door is in the back wall, on the customers' side.
-- Menu: Instant Coffee only ($2). The kettle holds one cup.
+- Menu: Instant Coffee only ($ 2.00). The kettle holds one cup.
 - Short queue (4). Day 1 has 4 customers, spread across the day.
 
 ## Decor that tells the story

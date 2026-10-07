@@ -9,12 +9,19 @@
 [ext_resource type="Resource" uid="uid://6tqfd0q0j74q" path="res://resources/dialogue/intro_request.tres" id="7_ouso4"]
 [ext_resource type="Resource" uid="uid://dfdgwb6276aib" path="res://resources/dialogue/intro_verdict.tres" id="8_blune"]
 [ext_resource type="Texture2D" uid="uid://84x3v8wuc2mi" path="res://assets/art/customers/aunt_bea.svg" id="9_th5th"]
+[ext_resource type="Script" path="res://scenes/story/TipJarVisit.cs" id="10_tipvisit"]
+[ext_resource type="Resource" path="res://resources/dialogue/tip_jar_greeting.tres" id="11_tipgreeting"]
+[ext_resource type="Resource" path="res://resources/dialogue/tip_jar_explanation.tres" id="12_tipexplanation"]
+[ext_resource type="Resource" path="res://resources/dialogue/tip_jar_clean_up.tres" id="13_tipcleanup"]
+[ext_resource type="Resource" path="res://resources/upgrades/clean_up.tres" id="14_cleanupupgrade"]
+[ext_resource type="Resource" path="res://resources/dialogue/tip_jar_farewell.tres" id="15_tipfarewell"]
 
-[node name="Main" type="Node" unique_id=1090373094 node_paths=PackedStringArray("Shop", "Hud", "Intro")]
+[node name="Main" type="Node" unique_id=1090373094 node_paths=PackedStringArray("Shop", "Hud", "Intro", "TipJarVisit")]
 script = ExtResource("1_k2fmo")
 Shop = NodePath("Shop")
 Hud = NodePath("Hud")
 Intro = NodePath("Intro")
+TipJarVisit = NodePath("TipJarVisit")
 
 [node name="Shop" parent="." unique_id=1744938923 instance=ExtResource("2_l3cfh")]
 
@@ -27,4 +34,13 @@ script = ExtResource("5_b1x3f")
 Welcome = ExtResource("6_a8run")
 Request = ExtResource("7_ouso4")
 Verdict = ExtResource("8_blune")
+RelativeLook = ExtResource("9_th5th")
+
+[node name="TipJarVisit" type="Node" parent="."]
+script = ExtResource("10_tipvisit")
+Greeting = ExtResource("11_tipgreeting")
+Explanation = ExtResource("12_tipexplanation")
+CleanUpSuggestion = ExtResource("13_tipcleanup")
+CleanUp = ExtResource("14_cleanupupgrade")
+Farewell = ExtResource("15_tipfarewell")
 RelativeLook = ExtResource("9_th5th")

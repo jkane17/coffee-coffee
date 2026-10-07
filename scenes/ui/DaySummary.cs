@@ -25,7 +25,8 @@ public partial class DaySummary : PanelContainer
         StatsLabel.Text =
             $"Customers served: {stats.CustomersServed} of {stats.CustomersExpected}\n" +
             $"Customers lost: {stats.CustomersLost}\n" +
-            $"Earnings: $ {stats.Earnings}";
+            $"Earnings: {stats.Earnings}" +
+            (stats.Tips > Money.Zero ? $"\n(including {stats.Tips} in tips)" : "");
         Reopen();
     }
 

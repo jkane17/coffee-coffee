@@ -8,6 +8,6 @@ Id = "rapid_boil_element"
 DisplayName = "Rapid-Boil Element"
 Description = "A new heating element. The kettle boils 50% faster."
 Category = 1
-Cost = 30
+CostDollars = 30.0
 Effect = 4
 Amount = 50

@@ -8,6 +8,6 @@ Id = "warm_smile"
 DisplayName = "Warm Smile"
 Description = "A friendly face makes the wait easier. Customers are 20% more patient."
 Category = 0
-Cost = 25
+CostDollars = 25.0
 Effect = 2
 Amount = 20

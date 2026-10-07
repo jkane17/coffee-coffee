@@ -8,6 +8,6 @@ Id = "better_tap"
 DisplayName = "Better Tap"
 Description = "Good water pressure at last. Fill the kettle twice as fast."
 Category = 1
-Cost = 15
+CostDollars = 15.0
 Effect = 3
 Amount = 100

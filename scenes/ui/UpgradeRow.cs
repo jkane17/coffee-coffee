@@ -40,7 +40,7 @@ public partial class UpgradeRow : PanelContainer
         }
         else
         {
-            BuyButton.Text = $"Buy  $ {_upgrade.Cost}";
+            BuyButton.Text = $"Buy  {_upgrade.Cost}";
             BuyButton.Disabled = !till.CanAfford(_upgrade.Cost);
         }
     }

@@ -26,6 +26,9 @@ public partial class Customer : Node2D
     /// <summary>The customer's sprite. Gets a random look on spawn and is tinted towards red as patience runs out.</summary>
     [Export] public Sprite2D Body { get; set; } = null!;
 
+    /// <summary>What the customer paid, tip included, e.g. "$ 2.45". Floats up and fades out when they're served.</summary>
+    [Export] public Label PaymentLabel { get; set; } = null!;
+
     /// <summary>Textures to pick from so customers don't all look the same.</summary>
     [Export] public Godot.Collections.Array<Texture2D> Looks { get; set; } = new();
 
@@ -53,6 +56,9 @@ public partial class Customer : Node2D
     /// <summary>The drink this customer wants, or null if their order hasn't been taken yet.</summary>
     public DrinkRecipe? Order { get; private set; }
 
+    /// <summary>How much patience they have left, from 0 (about to give up) to 1 (full).</summary>
+    public double PatienceLeft => _patience.Fraction;
+
     public override void _Ready()
     {
         if (Looks.Count > 0)
@@ -68,6 +74,7 @@ public partial class Customer : Node2D
         OrderBubble.Visible = false;
         ThinkingIndicator.Visible = false;
         ReadyIndicator.Visible = false;
+        PaymentLabel.Visible = false;
     }
 
     public void WalkTo(Vector2 globalTarget) => Walker.WalkTo(globalTarget);
@@ -108,6 +115,18 @@ public partial class Customer : Node2D
         State = CustomerState.Served;
         OrderBubble.Visible = false;
         Body.Modulate = Colors.White;
+    }
+
+    /// <summary>Float what they paid up from above their head, fading as it goes.</summary>
+    public void ShowPayment(Money amount)
+    {
+        PaymentLabel.Text = amount.ToString();
+        PaymentLabel.Visible = true;
+
+        Vector2 start = PaymentLabel.Position;
+        Tween tween = CreateTween().SetParallel();
+        tween.TweenProperty(PaymentLabel, Control.PropertyName.Position.ToString(), start + Vector2.Up * 30, 1.2);
+        tween.TweenProperty(PaymentLabel, CanvasItem.PropertyName.Modulate.ToString(), Colors.Transparent, 1.2).SetDelay(0.4);
     }
 
     /// <summary>Walk to the exit, then remove this customer from the scene.</summary>

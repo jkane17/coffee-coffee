@@ -40,6 +40,12 @@ public sealed class SaveStore
             return null;
         }
 
+        // Version 1 saved the balance in whole dollars; it's in cents now.
+        if (data is { Version: 1 })
+        {
+            data = data with { Version = 2, Money = data.Money * 100 };
+        }
+
         if (data is null || data.Version != SaveData.CurrentVersion)
         {
             GD.PushWarning($"Ignoring save file {_path}: unsupported version {data?.Version}.");

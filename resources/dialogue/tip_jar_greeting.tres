@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="Dialogue" format=3]
+
+[ext_resource type="Script" uid="uid://c2hnhqqdbogmb" path="res://game/dialogue/Dialogue.cs" id="1_dialogue"]
+[ext_resource type="Script" uid="uid://erexaarg3o7m" path="res://game/dialogue/DialogueLine.cs" id="2_line"]
+
+[sub_resource type="Resource" id="Resource_line1"]
+script = ExtResource("2_line")
+Speaker = "Aunt Bea"
+Text = "Morning, love! I couldn't wait to hear. How did your first day go?"
+
+[sub_resource type="Resource" id="Resource_line2"]
+script = ExtResource("2_line")
+Speaker = "You"
+Text = "Busier than I expected! I think people liked the coffee."
+
+[sub_resource type="Resource" id="Resource_line3"]
+script = ExtResource("2_line")
+Speaker = "Aunt Bea"
+Text = "Of course they did. Now, a proper coffee shop needs one of these. I found it at the back of my cupboard..."
+
+[resource]
+script = ExtResource("1_dialogue")
+Lines = Array[ExtResource("2_line")]([SubResource("Resource_line1"), SubResource("Resource_line2"), SubResource("Resource_line3")])

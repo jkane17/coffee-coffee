@@ -6,7 +6,7 @@
 [resource]
 script = ExtResource("1_qw2lm")
 DisplayName = "Instant Coffee"
-Price = 2
+PriceDollars = 2.0
 BrewSeconds = 4.0
 Icon = ExtResource("1_1xga5")
 metadata/_custom_type_script = "uid://dld8qwimxwovx"

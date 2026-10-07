@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="Dialogue" format=3]
+
+[ext_resource type="Script" uid="uid://c2hnhqqdbogmb" path="res://game/dialogue/Dialogue.cs" id="1_dialogue"]
+[ext_resource type="Script" uid="uid://erexaarg3o7m" path="res://game/dialogue/DialogueLine.cs" id="2_line"]
+
+[sub_resource type="Resource" id="Resource_line1"]
+script = ExtResource("2_line")
+Speaker = "Aunt Bea"
+Text = "A tip jar! Happy customers like to leave a little extra on top."
+
+[sub_resource type="Resource" id="Resource_line2"]
+script = ExtResource("2_line")
+Speaker = "Aunt Bea"
+Text = "The quicker you serve them, the happier they are, and the bigger the tip. Serve someone straight away and they might add half the price of their drink again."
+
+[sub_resource type="Resource" id="Resource_line3"]
+script = ExtResource("2_line")
+Speaker = "Aunt Bea"
+Text = "Keep them waiting until they're red in the face, though, and you won't see a cent."
+
+[resource]
+script = ExtResource("1_dialogue")
+Lines = Array[ExtResource("2_line")]([SubResource("Resource_line1"), SubResource("Resource_line2"), SubResource("Resource_line3")])
